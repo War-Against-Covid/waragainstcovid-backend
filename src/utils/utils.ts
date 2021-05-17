@@ -64,5 +64,3 @@ export const adminDashOps: AuthenticationOptions = {
     },
     cookiePassword: process.env.COOKIE_SECRET,
 };
-
-export default {};
