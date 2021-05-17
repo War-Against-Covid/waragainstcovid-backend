@@ -8,8 +8,10 @@ const router = Router();
 // Example on how to use class-transformer & class-validator with typegoose.
 router.get('/test', async (req, res) => {
     const user = plainToClass(User, {
-        name: 'test5',
-        password: '1234',
+        fullName: 'admin',
+        username: '1234332',
+        encryptedPassword: 'dsadasda',
+        type: 'abcdef', // Fail because of this.
     });
     req.log(user);
     await validateObject(user); // will fail
