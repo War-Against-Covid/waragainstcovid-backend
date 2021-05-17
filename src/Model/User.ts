@@ -14,7 +14,6 @@ enum UserType {
   scout = 'scout',
 }
 
-@Exclude()
 export class User extends DocumentCT {
   @prop({ required: true })
   @Expose()

@@ -17,7 +17,7 @@ AdminBro.registerAdapter(AdminBroMongoose);
 
 // Routes
 import leadRoutes from './Routes/lead';
-import sampleRoute from './Routes/sample';
+// import sampleRoute from './Routes/sample';
 import { adminDashOps, setupAdminDashboard } from './utils/utils';
 
 const app = express();
@@ -33,7 +33,7 @@ app.use((req, _, next) => {
 const loadRoutes = () => {
     app.use('/api/lead', leadRoutes);
 
-    app.use('/api/sample', sampleRoute);
+    // app.use('/api/sample', sampleRoute);
 
     app.get('/api/ping', async (req, res) => {
         req.log('seems to be working');

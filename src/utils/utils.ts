@@ -3,11 +3,12 @@ import { validate, ValidatorOptions } from 'class-validator';
 import bcrypt from 'bcrypt';
 import AdminBro from 'admin-bro';
 import { AuthenticationOptions } from '@admin-bro/express';
+import { plainToClass } from 'class-transformer';
 import RequestError from './RequestError';
-import { UserModel } from '../Model/User';
+import { User, UserModel } from '../Model/User';
 import { BCRYPT_HASH_RATE } from './constants';
 import {
-    LeadModel, Resource, Plasma, VerificationState,
+    Lead, LeadModel, Resource, Plasma, VerificationState,
 } from '../Model/Lead';
 
 export const validateObject = async (object: object, validatorOptions?: ValidatorOptions) => {
@@ -42,6 +43,10 @@ const userResource = {
                             password: undefined,
                         };
                     }
+                    const user = plainToClass(User, {
+                        ...request.payload,
+                    });
+                    await validateObject(user);
                     return request;
                 },
             },
@@ -82,9 +87,16 @@ const leadResource = {
         actions: {
             new: {
                 before: async (request: any) => {
-                    if (request.payload.createdOn) {
-                        request.payload.createdOn = new Date();
-                    }
+                    const lead = plainToClass(Lead, {
+                        // All newly created leads are set to unverified.
+                        verificationState: VerificationState.notVerified,
+                        verifiedOn: undefined,
+                        lastUpdated: undefined,
+                        updatedBy: undefined,
+                        createdOn: new Date(),
+                        ...request.payload,
+                    });
+                    await validateObject(lead);
                 },
             },
         },

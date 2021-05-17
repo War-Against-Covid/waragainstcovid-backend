@@ -69,7 +69,6 @@ export enum VerificationState {
     invalid                 = 'Invalid Do Not Show on Website',
 }
 
-@Exclude()
 export class Lead extends DocumentCT {
     @prop({ required: true, type: [String], enum: Resource })
     @Expose()
@@ -84,12 +83,12 @@ export class Lead extends DocumentCT {
     // TODO: Add auto state detection from city.
     @prop({ required: true })
     @Expose()
-    // @IsNotEmpty()
+    @IsNotEmpty()
     public state?: string;
 
     @prop({ required: true })
     @Expose()
-    // @IsNotEmpty()
+    @IsNotEmpty()
     public city?: string;
 
     @prop({ required: true, enum: VerificationState })
@@ -100,6 +99,7 @@ export class Lead extends DocumentCT {
 
     @prop({ required: true })
     @Expose()
+    @IsNotEmpty()
     public contact: string[];
 
     @prop()
