@@ -6,12 +6,13 @@ import express from 'express';
 import 'express-async-errors';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { plainToClass } from 'class-transformer';
-import { validateObject } from './utils/utils';
 import { ENV } from './utils/constants';
 import { ErrorHandler, logger, ReqLogger } from './utils/logger';
 import RequestError from './utils/RequestError';
-import { User, UserModel } from './Model/User';
+
+// Routes
+import leadRoutes from './Routes/lead';
+import sampleRoute from './Routes/sample';
 
 const app = express();
 
@@ -24,25 +25,16 @@ app.use((req, _, next) => {
 
 // Routes to be called when DB Connection was successful.
 const loadRoutes = () => {
+    app.use('/api/lead', leadRoutes);
+
+    app.use('/api/sample', sampleRoute);
+
     app.get('/api/ping', async (req, res) => {
         req.log('seems to be working');
         res.json({
             status: 'success',
             message: 'Pinged!',
         });
-    });
-
-    // Example on how to use class-transformer & class-validator with typegoose.
-    app.get('/test', async (req, res) => {
-        const user = plainToClass(User, {
-            name: 'test5',
-            password: '1234',
-        });
-        req.log(user);
-        await validateObject(user); // will fail
-        const doc = await UserModel.create(user);
-        req.log(doc);
-        res.json({});
     });
 
     // Unsupported Routes

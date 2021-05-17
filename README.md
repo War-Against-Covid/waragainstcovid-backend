@@ -1,5 +1,6 @@
 # WarAgainstCOVID-backend
-- Backend written for WarAgainstCOVID, an NGO working towards curating leads related to COVID-19.
+
+Backend written for WarAgainstCOVID, an NGO working towards curating leads related to COVID-19.
 
 ## Info
 
