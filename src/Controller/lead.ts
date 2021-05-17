@@ -43,14 +43,13 @@ export async function getLeadById(req: Request, res: Response) {
 export async function createLead(req: Request, res: Response) {
     const lead = plainToClass(Lead, {
         // All newly created leads are set to unverified.
+        ...req.body,
         verificationState: VerificationState.notVerified,
         verifiedOn: undefined,
         lastUpdated: undefined,
         updatedBy: undefined,
-        createdOn: undefined,
-        ...req.body,
+        createdOn: new Date(),
     });
-    lead.createdOn = new Date();
     await validateObject(lead);
     const doc = await LeadModel.create(lead);
     res.json({

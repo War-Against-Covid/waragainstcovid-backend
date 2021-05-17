@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import AdminBro from 'admin-bro';
 import { AuthenticationOptions } from '@admin-bro/express';
 import { plainToClass } from 'class-transformer';
+import { unflatten } from 'flat';
 import RequestError from './RequestError';
 import { User, UserModel } from '../Model/User';
 import { BCRYPT_HASH_RATE } from './constants';
@@ -33,7 +34,11 @@ const userResource = {
             },
         },
         actions: {
+            edit: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+            delete: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+            list: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
             new: {
+                isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin',
                 before: async (request: any) => {
                     if (request.payload.password) {
                         request.payload = {
@@ -43,8 +48,9 @@ const userResource = {
                             password: undefined,
                         };
                     }
+                    const userObj = unflatten(request.payload) as {};
                     const user = plainToClass(User, {
-                        ...request.payload,
+                        ...userObj,
                     });
                     await validateObject(user);
                     return request;
@@ -72,31 +78,73 @@ const leadResource = {
                 availableValues: Object.values(VerificationState).map((value) => { return { value, label: value }; }),
             },
             verifiedOn: {
-                isVisible: false,
+                // eslint-disable-next-line object-curly-newline
+                isVisible: { list: false, filter: true, show: true, edit: false },
             },
             lastUpdated: {
-                isVisible: false,
+                // eslint-disable-next-line object-curly-newline
+                isVisible: { list: false, filter: true, show: true, edit: false },
             },
             updatedBy: {
-                isVisible: false,
+                // eslint-disable-next-line object-curly-newline
+                isVisible: { list: false, filter: true, show: true, edit: false },
             },
             createdOn: {
-                isVisible: false,
+                // eslint-disable-next-line object-curly-newline
+                isVisible: { list: false, filter: true, show: true, edit: false },
             },
         },
         actions: {
+            delete: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
             new: {
-                before: async (request: any) => {
-                    const lead = plainToClass(Lead, {
+                // eslint-disable-next-line max-len
+                before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
+                    if (request.method !== 'post') return request;
+                    const leadObj = unflatten(request.payload) as {};
+
+                    const defaults: any = {
                         // All newly created leads are set to unverified.
                         verificationState: VerificationState.notVerified,
                         verifiedOn: undefined,
                         lastUpdated: undefined,
-                        updatedBy: undefined,
+                        updatedBy: currentAdmin.username,
                         createdOn: new Date(),
-                        ...request.payload,
+                    };
+
+                    const lead = plainToClass(Lead, {
+                        ...leadObj,
+                        ...defaults,
                     });
                     await validateObject(lead);
+                    request.payload = {
+                        ...request.payload,
+                        ...defaults,
+                    };
+                    return request;
+                },
+            },
+            edit: {
+                before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
+                    if (request.method !== 'post') return request;
+                    const leadObj = unflatten(request.payload) as {};
+                    const defaults: any = {
+                        // eslint-disable-next-line max-len
+                        verifiedOn: request.payload.verificationState === VerificationState.verified ? new Date() : undefined,
+                        lastUpdated: new Date(),
+                        updatedBy: currentAdmin.username,
+                    };
+
+                    const lead = plainToClass(Lead, {
+                        ...leadObj,
+                        ...defaults,
+                    });
+
+                    await validateObject(lead);
+                    request.payload = {
+                        ...request.payload,
+                        ...defaults,
+                    };
+                    return request;
                 },
             },
         },
