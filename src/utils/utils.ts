@@ -6,6 +6,9 @@ import { AuthenticationOptions } from '@admin-bro/express';
 import RequestError from './RequestError';
 import { UserModel } from '../Model/User';
 import { BCRYPT_HASH_RATE } from './constants';
+import {
+    LeadModel, Resource, Plasma, VerificationState,
+} from '../Model/Lead';
 
 export const validateObject = async (object: object, validatorOptions?: ValidatorOptions) => {
     const errors = await validate(object, validatorOptions);
@@ -46,9 +49,51 @@ const userResource = {
     },
 };
 
+// TODO: Add custom validation and update fields like createdOn.
+const leadResource = {
+    resource: LeadModel,
+    options: {
+        properties: {
+            resource: {
+                // eslint-disable-next-line max-len
+                availableValues: Object.values(Resource).map((value) => { return { value, label: value }; }),
+            },
+            plasma: {
+                // eslint-disable-next-line max-len
+                availableValues: Object.values(Plasma).map((value) => { return { value, label: value }; }),
+            },
+            verificationState: {
+                // eslint-disable-next-line max-len
+                availableValues: Object.values(VerificationState).map((value) => { return { value, label: value }; }),
+            },
+            verifiedOn: {
+                isVisible: false,
+            },
+            lastUpdated: {
+                isVisible: false,
+            },
+            updatedBy: {
+                isVisible: false,
+            },
+            createdOn: {
+                isVisible: false,
+            },
+        },
+        actions: {
+            new: {
+                before: async (request: any) => {
+                    if (request.payload.createdOn) {
+                        request.payload.createdOn = new Date();
+                    }
+                },
+            },
+        },
+    },
+};
+
 export const setupAdminDashboard = async () => {
     return new AdminBro({
-        resources: [userResource],
+        resources: [userResource, leadResource],
         rootPath: '/',
     });
 };

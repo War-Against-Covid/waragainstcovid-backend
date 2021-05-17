@@ -6,8 +6,6 @@ import { getModelForClass, prop } from '@typegoose/typegoose';
 import { Length, IsNotEmpty, IsEnum } from 'class-validator';
 import DocumentCT from './Base';
 
-// re-implement base Document to allow class-transformer to serialize/deserialize its properties
-
 // eslint-disable-next-line no-shadow
 enum UserType {
   // eslint-disable-next-line no-unused-vars
