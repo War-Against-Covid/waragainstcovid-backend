@@ -6,13 +6,19 @@ import express from 'express';
 import 'express-async-errors';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import AdminBro from 'admin-bro';
+import AdminBroMongoose from '@admin-bro/mongoose';
+import AdminBroExpress from '@admin-bro/express';
 import { ENV } from './utils/constants';
 import { ErrorHandler, logger, ReqLogger } from './utils/logger';
 import RequestError from './utils/RequestError';
 
+AdminBro.registerAdapter(AdminBroMongoose);
+
 // Routes
 import leadRoutes from './Routes/lead';
 import sampleRoute from './Routes/sample';
+import { adminDashOps, setupAdminDashboard } from './utils/utils';
 
 const app = express();
 
@@ -64,6 +70,10 @@ if (process.env.NODE_ENV !== ENV.TEST) {
                 useUnifiedTopology: true,
                 useCreateIndex: true,
             });
+            const adminBro = await setupAdminDashboard();
+            // const router = AdminBroExpress.buildRouter(adminBro);
+            const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, adminDashOps);
+            app.use(adminBro.options.rootPath, router);
             loadRoutes();
         } catch (err) {
             // Log error, redirect all routes to 500.
