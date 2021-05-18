@@ -147,28 +147,27 @@ export async function queryLead2(req: Request, res: Response) {
     const queries = req.query.q as string;
     const keywordregex = new RegExp(queries.split(', ').join('|'), 'g');
 
-    const data = classToPlain(await LeadModel.find({}));
+    const data = classToPlain(await LeadModel.find({}).lean());
 
     const result = data.filter((doc: any) => {
-        req.log({
-            keys: Object.keys(doc._doc),
-        });
         // eslint-disable-next-line no-restricted-syntax
-        for (const key of Object.keys(doc._doc)) {
-            if (keywordregex.test(doc._doc[key])) {
+        for (const key of Object.keys(doc)) {
+            if (typeof key === 'string' && keywordregex.test(doc[key])) {
                 return true;
             }
         }
         return false;
     });
 
+    // Convert _id back to hex
     const final = result.map((elem: any) => {
-        const x = elem._doc;
-        x._id = (x._id.id as Buffer).toString('hex');
-        return x;
+        const temp = elem;
+        temp._id = (temp._id.id as Buffer).toString('hex');
+        return temp;
     });
 
     res.json({
+        status: 'success',
         leads: final,
     });
 }
