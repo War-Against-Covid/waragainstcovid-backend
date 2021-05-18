@@ -1,7 +1,4 @@
-/* eslint-disable import/first */
 import * as dotenv from 'dotenv';
-
-dotenv.config();
 import express from 'express';
 import 'express-async-errors';
 import cors from 'cors';
@@ -10,22 +7,28 @@ import AdminBro from 'admin-bro';
 import swaggerUI from 'swagger-ui-express';
 import AdminBroMongoose from '@admin-bro/mongoose';
 import AdminBroExpress from '@admin-bro/express';
+import helmet from 'helmet';
 import { ENV } from './utils/constants';
 import { ErrorHandler, logger, ReqLogger } from './utils/logger';
 import RequestError from './utils/RequestError';
 import swaggerDoc from './openapi.json';
-
-AdminBro.registerAdapter(AdminBroMongoose);
-
-// Routes
 import leadRoutes from './Routes/leads';
 // import sampleRoute from './Routes/sample';
 import { adminDashOps, setupAdminDashboard } from './utils/utils';
 
+dotenv.config();
+
+AdminBro.registerAdapter(AdminBroMongoose);
+
 const app = express();
 
 app.use(express.json());
+
+// not a silver bullet, but helps
+app.use(helmet());
+
 app.use(cors());
+
 app.use((req, _, next) => {
     req.log = ReqLogger;
     next();
@@ -87,5 +90,3 @@ if (process.env.NODE_ENV !== ENV.TEST) {
 } else {
     loadRoutes();
 }
-
-export default app;
