@@ -144,17 +144,34 @@ export async function queryLead(req:Request, res:Response) {
 }
 
 export async function queryLead2(req: Request, res: Response) {
-    const queries = req.query.q as string;
-    const keywordregex = new RegExp(queries.split(', ').join('|'), 'g');
+    const queries = (req.query?.q as string).split(', ');
+    const keywordregex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'g');
 
     const data = classToPlain(await LeadModel.find({}).lean());
 
     const result = data.filter((doc: any) => {
+        const groupsFound = new Set();
         // eslint-disable-next-line no-restricted-syntax
         for (const key of Object.keys(doc)) {
             if (typeof key === 'string' && keywordregex.test(doc[key])) {
-                return true;
+                const matches = [] as string[];
+                if (typeof doc[key] === 'object') {
+                    Object.values(doc[key]).forEach((val) => {
+                        if (typeof val === 'string') {
+                            matches.push(...(val.match(keywordregex) || []).map((e: any) => e.replace(keywordregex, '$1')));
+                        }
+                    });
+                } else if (typeof doc[key] === 'string' || typeof doc[key] === 'number') {
+                    matches.push(...((String(doc[key]).match(keywordregex) || []).map((e: any) => e.replace(keywordregex, '$1'))));
+                }
+                // eslint-disable-next-line no-restricted-syntax
+                for (const match of matches) {
+                    groupsFound.add(match);
+                }
             }
+        }
+        if (groupsFound.size === queries.length) {
+            return true;
         }
         return false;
     });
