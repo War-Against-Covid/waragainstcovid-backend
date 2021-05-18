@@ -11,7 +11,7 @@ import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils/utils';
 
 export async function getAllLeads(_: Request, res: Response) {
-    const data = await LeadModel.find({});
+    const data = await LeadModel.find({}).lean();
     if (!data) {
         throw new RequestError(404, 'No Leads Present');
     } else {
@@ -23,7 +23,7 @@ export async function getAllLeads(_: Request, res: Response) {
 }
 
 export async function getLeadById(req: Request, res: Response) {
-    const data = await LeadModel.findById(req?.params?.id);
+    const data = await LeadModel.findById(req?.params?.id).lean();
 
     if (!data) {
         throw new RequestError(404, 'Lead Not Found');
@@ -44,7 +44,7 @@ export async function getVerifiedLeads(req: Request, res: Response) {
             $gte: new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
             $lt: new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 1),
         },
-    });
+    }).lean();
 
     res.json({
         status: 'success',
@@ -99,7 +99,7 @@ export async function queryLead(req:Request, res:Response) {
             { resource: query.resource as Resource },
             { plasma: query.plasma as Plasma },
         ],
-    });
+    }).lean();
 
     const response = data.map((d) => {
         if (d.rawText) {
