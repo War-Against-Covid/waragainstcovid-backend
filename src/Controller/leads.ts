@@ -144,7 +144,7 @@ export async function queryLead(req:Request, res:Response) {
 }
 
 export async function queryLead2(req: Request, res: Response) {
-    const queries = (req.query?.q as string).split(', ');
+    const queries = [...new Set((req.query?.q as string).split(', '))]; // This removes duplicates.
     const keywordregex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'g');
 
     const data = classToPlain(await LeadModel.find({}).lean());
