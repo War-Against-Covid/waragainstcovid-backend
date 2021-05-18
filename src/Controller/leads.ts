@@ -157,8 +157,8 @@ export async function queryLead2(req: Request, res: Response) {
                 const matches = [] as string[];
                 if (typeof doc[key] === 'object') {
                     Object.values(doc[key]).forEach((val) => {
-                        if (typeof val === 'string') {
-                            matches.push(...(val.match(keywordregex) || []).map((e: any) => e.replace(keywordregex, '$1')));
+                        if (typeof doc[key] === 'string' || typeof doc[key] === 'number') {
+                            matches.push(...(String(val).match(keywordregex) || []).map((e: any) => e.replace(keywordregex, '$1')));
                         }
                     });
                 } else if (typeof doc[key] === 'string' || typeof doc[key] === 'number') {
