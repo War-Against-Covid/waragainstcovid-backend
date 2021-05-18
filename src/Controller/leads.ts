@@ -1,5 +1,6 @@
+/* eslint-disable no-underscore-dangle */
 import { Request, Response } from 'express';
-import { plainToClass } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 import {
     Lead,
     LeadModel,
@@ -140,4 +141,34 @@ export async function queryLead(req:Request, res:Response) {
             message: 'No Leads Found',
         });
     }
+}
+
+export async function queryLead2(req: Request, res: Response) {
+    const queries = req.query.q as string;
+    const keywordregex = new RegExp(queries.split(', ').join('|'), 'g');
+
+    const data = classToPlain(await LeadModel.find({}));
+
+    const result = data.filter((doc: any) => {
+        req.log({
+            keys: Object.keys(doc._doc),
+        });
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key of Object.keys(doc._doc)) {
+            if (keywordregex.test(doc._doc[key])) {
+                return true;
+            }
+        }
+        return false;
+    });
+
+    const final = result.map((elem: any) => {
+        const x = elem._doc;
+        x._id = (x._id.id as Buffer).toString('hex');
+        return x;
+    });
+
+    res.json({
+        leads: final,
+    });
 }
