@@ -2,9 +2,11 @@
 /* eslint-disable no-multi-spaces */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
-import { Exclude, Expose } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { getModelForClass, prop } from '@typegoose/typegoose';
-import { IsNotEmpty, IsEnum } from 'class-validator';
+import {
+    IsNotEmpty, IsEnum, MinLength, MaxLength,
+} from 'class-validator';
 import DocumentCT from './Base';
 
 // eslint-disable-next-line no-shadow
@@ -100,6 +102,8 @@ export class Lead extends DocumentCT {
     @prop({ required: true })
     @Expose()
     @IsNotEmpty()
+    @MinLength(10, { each: true })
+    @MaxLength(11, { each: true })
     public contact: string[];
 
     @prop()

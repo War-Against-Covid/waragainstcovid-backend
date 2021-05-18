@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { plainToClass } from 'class-transformer';
-import { Lead, LeadModel, VerificationState } from '../Model/Lead';
+import { Lead, LeadModel, VerificationState } from '../Model/Leads';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils/utils';
 
@@ -33,6 +33,7 @@ export async function getLeadById(req: Request, res: Response) {
  *  POST /api/lead/
  *  payload: {
  *      text: "lorem ipsum", // Need to extract data from this text automatically
+ *      source: "",
  *      contact: [
  *          "9876543211",
  *          "9988775545"

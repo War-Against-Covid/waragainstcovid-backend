@@ -18,7 +18,7 @@ import swaggerDoc from './openapi.json';
 AdminBro.registerAdapter(AdminBroMongoose);
 
 // Routes
-import leadRoutes from './Routes/lead';
+import leadRoutes from './Routes/leads';
 // import sampleRoute from './Routes/sample';
 import { adminDashOps, setupAdminDashboard } from './utils/utils';
 
@@ -34,7 +34,7 @@ app.use((req, _, next) => {
 // Routes to be called when DB Connection was successful.
 const loadRoutes = () => {
     app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
-    app.use('/api/lead', leadRoutes);
+    app.use('/api/leads', leadRoutes);
 
     // app.use('/api/sample', sampleRoute);
 

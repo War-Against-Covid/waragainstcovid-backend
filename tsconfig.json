@@ -19,7 +19,8 @@
     "forceConsistentCasingInFileNames": true,
     "typeRoots": [
       "./types"
-    ]
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "src"

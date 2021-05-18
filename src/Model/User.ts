@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable max-len */
-import { Exclude, Expose } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { getModelForClass, prop } from '@typegoose/typegoose';
 import { Length, IsNotEmpty, IsEnum } from 'class-validator';
 import DocumentCT from './Base';

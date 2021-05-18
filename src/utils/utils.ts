@@ -10,7 +10,7 @@ import { User, UserModel } from '../Model/User';
 import { BCRYPT_HASH_RATE } from './constants';
 import {
     Lead, LeadModel, Resource, Plasma, VerificationState,
-} from '../Model/Lead';
+} from '../Model/Leads';
 
 export const validateObject = async (object: object, validatorOptions?: ValidatorOptions) => {
     const errors = await validate(object, validatorOptions);
@@ -66,6 +66,9 @@ const leadResource = {
     options: {
         properties: {
             resource: {
+                isVisible: {
+                    list: true, edit: true, filter: true, show: true,
+                },
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Resource).map((value) => { return { value, label: value }; }),
             },

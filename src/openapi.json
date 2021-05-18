@@ -11,7 +11,7 @@
     }
   ],
   "paths": {
-    "/api/lead": {
+    "/api/leads": {
       "get": {
         "tags": [
           "Leads"
@@ -85,7 +85,7 @@
         }
       }
     },
-    "/api/lead/{id}": {
+    "/api/leads/{id}": {
       "get": {
         "tags": [
           "Leads"
@@ -245,7 +245,7 @@
           },
           "rawText": {
             "type": "string",
-            "description": "Text that was specified in the `text` field of POST /api/lead"
+            "description": "Text that was specified in the `text` field of POST /api/leads"
           },
           "comments": {
             "type": "string",
