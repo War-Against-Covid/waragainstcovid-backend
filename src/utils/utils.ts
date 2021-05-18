@@ -154,7 +154,7 @@ const leadResource = {
 export const setupAdminDashboard = async () => {
     return new AdminBro({
         resources: [userResource, leadResource],
-        rootPath: '/',
+        rootPath: '/admin',
     });
 };
 

@@ -1,0 +1,278 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "WarAgainstCovid",
+    "version": "1.0.0",
+    "description": "API for WarAgainstCOVID.\n"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000/"
+    }
+  ],
+  "paths": {
+    "/api/lead": {
+      "get": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Get a list of all leads",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/leads"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Add a new lead",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "example": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+                  },
+                  "contact": {
+                    "type": "array",
+                    "description": "Plasma types available (Ignore if 'Plasma' not in `resource`).",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "9987654321",
+                      "+919898765432"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/lead-created"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/serverError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lead/{id}": {
+      "get": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Get the lead details using leadId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "id of the lead"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/lead-model"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/lead-not-found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "leads": {
+        "type": "object",
+        "properties": {
+          "leads": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/lead-model"
+            }
+          }
+        }
+      },
+      "lead-created": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Lead created"
+          },
+          "lead": {
+            "$ref": "#/components/schemas/lead-model"
+          }
+        }
+      },
+      "lead-not-found": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "failed"
+          },
+          "message": {
+            "type": "string",
+            "example": "Lead not found"
+          }
+        }
+      },
+      "serverError": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "failed"
+          },
+          "message": {
+            "type": "string",
+            "example": "Internal error occured"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "lead-model": {
+        "type": "object",
+        "properties": {
+          "resource": {
+            "type": "array",
+            "description": "Resources available in the lead.",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Air Ambulance",
+              "Ambulance",
+              "Bevacizumab",
+              "Plasma"
+            ]
+          },
+          "plasma": {
+            "type": "array",
+            "description": "Plasma types available (Ignore if 'Plasma' not in `resource`).",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "A+",
+              "A-",
+              "B+",
+              "B-"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "description": "State where the lead is",
+            "example": "Delhi"
+          },
+          "city": {
+            "type": "string",
+            "description": "State where the lead is",
+            "example": "New Delhi"
+          },
+          "verificationState": {
+            "type": "string",
+            "description": "Verification State of the lead. Will be an enum."
+          },
+          "contact": {
+            "type": "array",
+            "description": "Contact Numbers of the lead.",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "998765431",
+              "+919898765431"
+            ]
+          },
+          "mapLink": {
+            "type": "string",
+            "description": "Google maps link of the lead (If any)"
+          },
+          "rawText": {
+            "type": "string",
+            "description": "Text that was specified in the `text` field of POST /api/lead"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Comments left by a scout (if any)"
+          },
+          "verifiedOn": {
+            "type": "string",
+            "description": "JS Date when the lead was verified by the scout."
+          },
+          "source": {
+            "type": "string",
+            "description": "Source == Website from where the lead was scrapped (if applicable)"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "description": "Last date when the lead data was modified"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "Name of the user who last updated the lead"
+          },
+          "createdOn": {
+            "type": "string",
+            "description": "JS Date when the lead was created"
+          }
+        }
+      }
+    }
+  }
+}

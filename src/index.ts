@@ -7,11 +7,13 @@ import 'express-async-errors';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import AdminBro from 'admin-bro';
+import swaggerUI from 'swagger-ui-express';
 import AdminBroMongoose from '@admin-bro/mongoose';
 import AdminBroExpress from '@admin-bro/express';
 import { ENV } from './utils/constants';
 import { ErrorHandler, logger, ReqLogger } from './utils/logger';
 import RequestError from './utils/RequestError';
+import swaggerDoc from './openapi.json';
 
 AdminBro.registerAdapter(AdminBroMongoose);
 
@@ -31,6 +33,7 @@ app.use((req, _, next) => {
 
 // Routes to be called when DB Connection was successful.
 const loadRoutes = () => {
+    app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
     app.use('/api/lead', leadRoutes);
 
     // app.use('/api/sample', sampleRoute);
