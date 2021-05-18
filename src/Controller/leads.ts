@@ -86,34 +86,58 @@ export async function createLead(req: Request, res: Response) {
 }
 export async function queryLead(req:Request, res:Response) {
     const query = {
-        state: req.query.state || '',
-        city: req.query.city || '',
+        state: req.query.state as string || '',
+        city: req.query.city as string || '',
         resource: req.query.resource || '',
         plasma: req.query.plasma || '',
-        keyword: req.query.keyword || '',
+        keyword: req.query.keyword as string || '',
     };
-    const data = await LeadModel.find({
+    let data: any[];
+    // get city specific leads, if city exists in the query
+    if (query.city === '') {
+        data = await LeadModel.find({
+            verificationState: VerificationState.verified,
+            state: query.state,
+        }).lean();
+    } else {
+        data = await LeadModel.find({
+            verificationState: VerificationState.verified,
+            city: query.city,
+        }).lean();
+    }
+    // eslint-disable-next-line no-underscore-dangle
+    const ids = data.map((d) => d._id);
+
+    // get the leads with mentioned resources/plasma
+    const leads = await LeadModel.find({
+        _id: {
+            $in: ids,
+        },
         $or: [
-            { state: query.state as string },
-            { city: query.city as string },
             { resource: query.resource as Resource },
             { plasma: query.plasma as Plasma },
         ],
     }).lean();
-
-    const response = data.map((d) => {
-        if (d.rawText) {
-            if (d.rawText.includes(query.keyword as string)) {
-                return d;
+    // Check the leads for mentioned keywords
+    const response = leads.map((lead) => {
+        if (lead.rawText) {
+            if (lead.rawText.includes(query.keyword)) {
+                return lead;
             }
             return null;
         }
-        return d;
+        return lead;
     });
-
-    res.json({
-        status: 'success',
-        message: 'Leads found',
-        lead: response,
-    });
+    if (response.length !== 0) {
+        res.json({
+            status: 'success',
+            message: 'Leads found',
+            lead: response,
+        });
+    } else {
+        res.json({
+            status: 'Failed',
+            message: 'No Leads Found',
+        });
+    }
 }
