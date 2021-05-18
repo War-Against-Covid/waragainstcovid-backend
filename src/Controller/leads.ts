@@ -1,6 +1,12 @@
 import { Request, Response } from 'express';
 import { plainToClass } from 'class-transformer';
-import { Lead, LeadModel, VerificationState } from '../Model/Leads';
+import {
+    Lead,
+    LeadModel,
+    VerificationState,
+    Resource,
+    Plasma,
+} from '../Model/Leads';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils/utils';
 
@@ -76,5 +82,38 @@ export async function createLead(req: Request, res: Response) {
         status: 'success',
         message: 'Lead Created',
         lead: doc,
+    });
+}
+export async function queryLead(req:Request, res:Response) {
+    const query = {
+        state: req.query.state || '',
+        city: req.query.city || '',
+        resource: req.query.resource || '',
+        plasma: req.query.plasma || '',
+        keyword: req.query.keyword || '',
+    };
+    const data = await LeadModel.find({
+        $or: [
+            { state: query.state as string },
+            { city: query.city as string },
+            { resource: query.resource as Resource },
+            { plasma: query.plasma as Plasma },
+        ],
+    });
+
+    const response = data.map((d) => {
+        if (d.rawText) {
+            if (d.rawText.includes(query.keyword as string)) {
+                return d;
+            }
+            return null;
+        }
+        return d;
+    });
+
+    res.json({
+        status: 'success',
+        message: 'Leads found',
+        lead: response,
     });
 }
