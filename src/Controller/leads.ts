@@ -145,6 +145,9 @@ export async function queryLead(req:Request, res:Response) {
 
 export async function queryLead2(req: Request, res: Response) {
     const queries = [...new Set((req.query?.q as string).split(', '))]; // This removes duplicates.
+    req.log({
+        queries,
+    });
     const keywordregex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'g');
 
     const data = classToPlain(await LeadModel.find({}).lean());
@@ -157,7 +160,7 @@ export async function queryLead2(req: Request, res: Response) {
                 const matches = [] as string[];
                 if (typeof doc[key] === 'object') {
                     Object.values(doc[key]).forEach((val) => {
-                        if (typeof doc[key] === 'string' || typeof doc[key] === 'number') {
+                        if (typeof val === 'string' || typeof val === 'number') {
                             matches.push(...(String(val).match(keywordregex) || []).map((e: any) => e.replace(keywordregex, '$1')));
                         }
                     });
