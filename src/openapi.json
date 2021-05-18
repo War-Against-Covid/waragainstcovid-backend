@@ -85,6 +85,26 @@
         }
       }
     },
+    "/api/leads/verified": {
+      "get": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Get all recently verified leads (Leads that were verified today)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/leads"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/leads/{id}": {
       "get": {
         "tags": [
@@ -132,6 +152,10 @@
       "leads": {
         "type": "object",
         "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
           "leads": {
             "type": "array",
             "items": {
@@ -188,6 +212,10 @@
       "lead-model": {
         "type": "object",
         "properties": {
+          "_id": {
+            "type": "string",
+            "description": "ObjectId of the lead"
+          },
           "resource": {
             "type": "array",
             "description": "Resources available in the lead.",
@@ -258,6 +286,10 @@
           "source": {
             "type": "string",
             "description": "Source == Website from where the lead was scrapped (if applicable)"
+          },
+          "__v": {
+            "type": "string",
+            "description": "idk what this is, some mongodb stuff."
           },
           "lastUpdated": {
             "type": "string",

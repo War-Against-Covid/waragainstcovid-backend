@@ -10,6 +10,7 @@ export async function getAllLeads(_: Request, res: Response) {
         throw new RequestError(404, 'No Leads Present');
     } else {
         res.json({
+            status: 'success',
             leads: data,
         });
     }
@@ -22,9 +23,27 @@ export async function getLeadById(req: Request, res: Response) {
         throw new RequestError(404, 'Lead Not Found');
     } else {
         res.json({
-            data,
+            status: 'success',
+            lead: data,
         });
     }
+}
+
+export async function getVerifiedLeads(req: Request, res: Response) {
+    const today = new Date();
+
+    const data = await LeadModel.find({
+        verificationState: VerificationState.verified,
+        verifiedOn: {
+            $gte: new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
+            $lt: new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 1),
+        },
+    });
+
+    res.json({
+        status: 'success',
+        leads: data,
+    });
 }
 
 // TODO: change this to current POST /api/.
