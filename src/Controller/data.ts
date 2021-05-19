@@ -41,7 +41,7 @@ export function getAllCities(_req: Request, res: Response) {
 /* get an array of all indian states */
 export function getAllStates(_req: Request, res: Response) {
     res.json({
-        cities: getStates(),
+        states: getStates(),
         status: 'success',
     });
 }
@@ -49,7 +49,17 @@ export function getAllStates(_req: Request, res: Response) {
 /* get an object of all cities grouped by states */
 export function getAllCitiesGroupedByState(_req: Request, res: Response) {
     res.json({
-        cities: getCitiesGroupedByState(),
+        data: getCitiesGroupedByState(),
+        status: 'success',
+    });
+}
+
+/* return all the data that the above do */
+export function getLocationData(_req: Request, res: Response) {
+    res.json({
+        states: getStates(),
+        cities: getCities(),
+        data: getCitiesGroupedByState(),
         status: 'success',
     });
 }
