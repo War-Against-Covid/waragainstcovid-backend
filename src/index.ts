@@ -27,7 +27,8 @@ const app = express();
 app.use(express.json());
 
 // not a silver bullet, but helps
-app.use(helmet());
+// when in production remove '{ contentSecurityPolicy: false }'
+app.use(helmet(process.env.NODE_ENV !== ENV.PROD ? { contentSecurityPolicy: false } : {}));
 
 app.use(cors());
 
