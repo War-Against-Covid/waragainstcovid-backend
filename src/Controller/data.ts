@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Resource } from '../Model/Leads';
 import CITIES from '../utils/cities.json';
 
 export function getStates() {
@@ -63,5 +64,13 @@ export function getLocationData(_req: Request, res: Response) {
         cities: getCities(),
         data: getCitiesGroupedByState(),
         status: 'success',
+    });
+}
+
+/* return all resources */
+export function getResources(_req: Request, res: Response) {
+    res.json({
+        status: 'success',
+        resources: Object.values(Resource),
     });
 }

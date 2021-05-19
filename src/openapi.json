@@ -145,10 +145,267 @@
           }
         }
       }
+    },
+    "/api/leads/strictSearch/": {
+      "get": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Get the lead details using leadId",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "queries"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/leads"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/leads/keywordSearch/": {
+      "get": {
+        "tags": [
+          "Leads"
+        ],
+        "summary": "Get the lead details using leadId",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "queries"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/leads"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/all-cities": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Get an array of all cities in India",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/all-cities"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/all-cities-grouped": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Get an array of all cities grouped by states in India",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/all-cities-grouped"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/all-states": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Get an array of all states in India",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/all-states"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/locations": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Get an array of all cities and states along with grouped data",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/locations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/resources": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Get an array of all resources",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resources"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "all-cities": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "cities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "all-cities-grouped": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "string": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "all-states": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "states": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "locations": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "cities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "states": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "string": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "resources": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": [
+                "Air Ambulance",
+                "Ambulance"
+              ]
+            }
+          }
+        }
+      },
       "leads": {
         "type": "object",
         "properties": {
