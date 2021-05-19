@@ -71,6 +71,6 @@ export function getLocationData(_req: Request, res: Response) {
 export function getResources(_req: Request, res: Response) {
     res.json({
         status: 'success',
-        resources: Object.values(Resource),
+        resources: Object.values(Resource).map((val) => val.trim()),
     });
 }
