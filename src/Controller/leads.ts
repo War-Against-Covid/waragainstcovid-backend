@@ -95,8 +95,7 @@ export async function queryLead(req: Request, res: Response) {
 
     const result = data.filter((doc: any) => {
         const groupsFound = new Set();
-        // eslint-disable-next-line no-restricted-syntax
-        for (const key of Object.keys(doc)) {
+        Object.keys(doc).forEach((key) => {
             const objValue = doc[key];
             if (keywordRegex.test(objValue)) {
                 const matches: string[] = [];
@@ -113,7 +112,7 @@ export async function queryLead(req: Request, res: Response) {
                     groupsFound.add(match);
                 });
             }
-        }
+        });
         return groupsFound.size === queries.length;
     });
 
