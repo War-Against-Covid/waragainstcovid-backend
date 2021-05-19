@@ -1,9 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import { Request, Response } from 'express';
 import { classToPlain, plainToClass } from 'class-transformer';
-import { Lead, LeadModel, VerificationState } from '../Model/Leads';
+import { Lead, LeadModel } from '../Model/Leads';
+import { VerificationState } from '../utils/constants';
 import RequestError from '../utils/RequestError';
-import { validateObject } from '../utils/utils';
+import { validateObject } from '../utils';
 
 export async function getAllLeads(_: Request, res: Response) {
     const data = await LeadModel.find({}).lean();

@@ -1,24 +1,16 @@
 /* eslint-disable arrow-body-style */
-import { validate, ValidatorOptions } from 'class-validator';
 import bcrypt from 'bcrypt';
 import AdminBro from 'admin-bro';
 import { AuthenticationOptions } from '@admin-bro/express';
 import { plainToClass } from 'class-transformer';
 import { unflatten } from 'flat';
-import RequestError from './RequestError';
 import { User, UserModel } from '../Model/User';
-import { BCRYPT_HASH_RATE } from './constants';
-import {
-    Lead, LeadModel, Resource, Plasma, VerificationState,
-} from '../Model/Leads';
+import { Lead, LeadModel } from '../Model/Leads';
 import { getCities, getStates } from '../Controller/data';
-
-export const validateObject = async (object: object, validatorOptions?: ValidatorOptions) => {
-    const errors = await validate(object, validatorOptions);
-    if (errors.length !== 0) {
-        throw new RequestError(400, `validation failed, errors: ${errors}`);
-    }
-};
+import { validateObject } from '.';
+import {
+    BCRYPT_HASH_RATE, Resource, Plasma, VerificationState,
+} from './constants';
 
 const userResource = {
     resource: UserModel,

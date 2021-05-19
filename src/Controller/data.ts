@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Resource } from '../Model/Leads';
+import { Resource } from '../utils/constants';
 import CITIES from '../utils/cities.json';
 
 export function getStates() {

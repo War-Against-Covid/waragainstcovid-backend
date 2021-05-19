@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { plainToClass } from 'class-transformer';
-import { validateObject } from '../utils/utils';
+import { validateObject } from '../utils';
 import { User, UserModel } from '../Model/User';
 
 const router = Router();
