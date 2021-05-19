@@ -13,6 +13,7 @@ import { ErrorHandler, logger, ReqLogger } from './utils/logger';
 import RequestError from './utils/RequestError';
 import swaggerDoc from './openapi.json';
 import leadRoutes from './Routes/leads';
+import dataRoutes from './Routes/data';
 // import sampleRoute from './Routes/sample';
 import { adminDashOps, setupAdminDashboard } from './utils/utils';
 
@@ -38,6 +39,7 @@ app.use((req, _, next) => {
 const loadRoutes = () => {
     app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
     app.use('/api/leads', leadRoutes);
+    app.use('/api/data', dataRoutes);
 
     // app.use('/api/sample', sampleRoute);
 
@@ -78,7 +80,10 @@ if (process.env.NODE_ENV !== ENV.TEST) {
             });
             const adminBro = await setupAdminDashboard();
             // const router = AdminBroExpress.buildRouter(adminBro);
-            const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, adminDashOps);
+            const router = AdminBroExpress.buildAuthenticatedRouter(
+                adminBro,
+                adminDashOps,
+            );
             app.use(adminBro.options.rootPath, router);
             loadRoutes();
         } catch (err) {
