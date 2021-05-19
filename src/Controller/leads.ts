@@ -89,7 +89,7 @@ export async function queryLead(req: Request, res: Response) {
     req.log({
         queries,
     });
-    const keywordregex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'g');
+    const keywordRegex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'gi');
 
     const data = classToPlain(await LeadModel.find({}).lean());
 
@@ -97,27 +97,24 @@ export async function queryLead(req: Request, res: Response) {
         const groupsFound = new Set();
         // eslint-disable-next-line no-restricted-syntax
         for (const key of Object.keys(doc)) {
-            if (typeof key === 'string' && keywordregex.test(doc[key])) {
-                const matches = [] as string[];
-                if (typeof doc[key] === 'object') {
-                    Object.values(doc[key]).forEach((val) => {
+            const objValue = doc[key];
+            if (keywordRegex.test(objValue)) {
+                const matches: string[] = [];
+                if (typeof objValue === 'object') {
+                    Object.values(objValue).forEach((val) => {
                         if (typeof val === 'string' || typeof val === 'number') {
-                            matches.push(...(String(val).match(keywordregex) || []).map((e: any) => e.replace(keywordregex, '$1')));
+                            matches.push(...(String(val).match(keywordRegex) || []).map((e: any) => e.replace(keywordRegex, '$1')));
                         }
                     });
-                } else if (typeof doc[key] === 'string' || typeof doc[key] === 'number') {
-                    matches.push(...((String(doc[key]).match(keywordregex) || []).map((e: any) => e.replace(keywordregex, '$1'))));
+                } else if (typeof objValue === 'string' || typeof objValue === 'number') {
+                    matches.push(...((String(objValue).match(keywordRegex) || []).map((e: any) => e.replace(keywordRegex, '$1'))));
                 }
-                // eslint-disable-next-line no-restricted-syntax
-                for (const match of matches) {
+                matches.forEach((match) => {
                     groupsFound.add(match);
-                }
+                });
             }
         }
-        if (groupsFound.size === queries.length) {
-            return true;
-        }
-        return false;
+        return groupsFound.size === queries.length;
     });
 
     // Convert _id back to hex
