@@ -1,11 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Request, Response } from 'express';
 import { classToPlain, plainToClass } from 'class-transformer';
-import {
-    Lead,
-    LeadModel,
-    VerificationState,
-} from '../Model/Leads';
+import { Lead, LeadModel, VerificationState } from '../Model/Leads';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils/utils';
 
@@ -84,7 +80,7 @@ export async function createLead(req: Request, res: Response) {
     });
 }
 
-export async function queryLead(req: Request, res: Response) {
+export async function strictSearch(req: Request, res: Response) {
     const queries = [...new Set((req.query?.q as string).split(', '))]; // This removes duplicates.
     req.log({
         queries,
@@ -114,6 +110,39 @@ export async function queryLead(req: Request, res: Response) {
             }
         });
         return groupsFound.size === queries.length;
+    });
+
+    // Convert _id back to hex
+    const final = result.map((elem: any) => {
+        const temp = elem;
+        temp._id = (temp._id.id as Buffer).toString('hex');
+        return temp;
+    });
+
+    res.json({
+        status: 'success',
+        leads: final,
+    });
+}
+
+export async function keywordSearch(req: Request, res: Response) {
+    const queries = req.query.q as string;
+    const keywordRegex = new RegExp(queries.split(', ').join('|'), 'gi');
+
+    const data = classToPlain(await LeadModel.find({}).lean());
+
+    const result = data.filter((doc: any) => {
+        req.log({
+            keys: Object.keys(doc),
+        });
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key of Object.keys(doc)) {
+            if (keywordRegex.test(doc[key])) {
+                return true;
+            }
+        }
+        return false;
     });
 
     // Convert _id back to hex
