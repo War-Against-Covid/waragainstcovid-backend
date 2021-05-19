@@ -1,4 +1,7 @@
+/* eslint-disable import/first */
 import * as dotenv from 'dotenv';
+
+dotenv.config();
 import express from 'express';
 import 'express-async-errors';
 import cors from 'cors';
@@ -16,8 +19,6 @@ import leadRoutes from './Routes/leads';
 import dataRoutes from './Routes/data';
 // import sampleRoute from './Routes/sample';
 import { adminDashOps, setupAdminDashboard } from './utils/utils';
-
-dotenv.config();
 
 AdminBro.registerAdapter(AdminBroMongoose);
 
@@ -79,11 +80,7 @@ if (process.env.NODE_ENV !== ENV.TEST) {
                 useCreateIndex: true,
             });
             const adminBro = await setupAdminDashboard();
-            // const router = AdminBroExpress.buildRouter(adminBro);
-            const router = AdminBroExpress.buildAuthenticatedRouter(
-                adminBro,
-                adminDashOps,
-            );
+            const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, adminDashOps);
             app.use(adminBro.options.rootPath, router);
             loadRoutes();
         } catch (err) {

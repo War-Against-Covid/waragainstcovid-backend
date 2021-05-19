@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import CITIES from '../utils/cities.json';
 
-function getStates() {
+export function getStates() {
     let states = [];
     // here the states will be repeated, so we cast it into a Set and then back into an
     // array
@@ -10,7 +10,7 @@ function getStates() {
     return states;
 }
 
-function getCities() {
+export function getCities() {
     let cities = [];
     cities = CITIES.map((data) => data.city.trim());
     cities.sort((a, b) => a.localeCompare(b));

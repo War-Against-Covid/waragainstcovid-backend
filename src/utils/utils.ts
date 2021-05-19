@@ -11,6 +11,7 @@ import { BCRYPT_HASH_RATE } from './constants';
 import {
     Lead, LeadModel, Resource, Plasma, VerificationState,
 } from '../Model/Leads';
+import { getCities, getStates } from '../Controller/data';
 
 export const validateObject = async (object: object, validatorOptions?: ValidatorOptions) => {
     const errors = await validate(object, validatorOptions);
@@ -65,20 +66,26 @@ const leadResource = {
     resource: LeadModel,
     options: {
         properties: {
+            state: {
+                availableValues: getStates().map((value) => ({ value, label: value })),
+            },
+            city: {
+                availableValues: getCities().map((value) => ({ value, label: value })),
+            },
             resource: {
                 isVisible: {
                     list: true, edit: true, filter: true, show: true,
                 },
                 // eslint-disable-next-line max-len
-                availableValues: Object.values(Resource).map((value) => { return { value, label: value }; }),
+                availableValues: Object.values(Resource).map((value) => ({ value, label: value })),
             },
             plasma: {
                 // eslint-disable-next-line max-len
-                availableValues: Object.values(Plasma).map((value) => { return { value, label: value }; }),
+                availableValues: Object.values(Plasma).map((value) => ({ value, label: value })),
             },
             verificationState: {
                 // eslint-disable-next-line max-len
-                availableValues: Object.values(VerificationState).map((value) => { return { value, label: value }; }),
+                availableValues: Object.values(VerificationState).map((value) => ({ value, label: value })),
             },
             verifiedOn: {
                 // eslint-disable-next-line object-curly-newline
@@ -157,7 +164,6 @@ const leadResource = {
 export const setupAdminDashboard = async () => {
     return new AdminBro({
         resources: [userResource, leadResource],
-        rootPath: '/admin',
     });
 };
 
