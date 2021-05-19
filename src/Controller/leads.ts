@@ -5,8 +5,6 @@ import {
     Lead,
     LeadModel,
     VerificationState,
-    Resource,
-    Plasma,
 } from '../Model/Leads';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils/utils';
@@ -85,65 +83,8 @@ export async function createLead(req: Request, res: Response) {
         lead: doc,
     });
 }
-export async function queryLead(req:Request, res:Response) {
-    const query = {
-        state: req.query.state as string || '',
-        city: req.query.city as string || '',
-        resource: req.query.resource || '',
-        plasma: req.query.plasma || '',
-        keyword: req.query.keyword as string || '',
-    };
-    let data: any[];
-    // get city specific leads, if city exists in the query
-    if (query.city === '') {
-        data = await LeadModel.find({
-            verificationState: VerificationState.verified,
-            state: query.state,
-        }).lean();
-    } else {
-        data = await LeadModel.find({
-            verificationState: VerificationState.verified,
-            city: query.city,
-        }).lean();
-    }
-    // eslint-disable-next-line no-underscore-dangle
-    const ids = data.map((d) => d._id);
 
-    // get the leads with mentioned resources/plasma
-    const leads = await LeadModel.find({
-        _id: {
-            $in: ids,
-        },
-        $or: [
-            { resource: query.resource as Resource },
-            { plasma: query.plasma as Plasma },
-        ],
-    }).lean();
-    // Check the leads for mentioned keywords
-    const response = leads.map((lead) => {
-        if (lead.rawText) {
-            if (lead.rawText.includes(query.keyword)) {
-                return lead;
-            }
-            return null;
-        }
-        return lead;
-    });
-    if (response.length !== 0) {
-        res.json({
-            status: 'success',
-            message: 'Leads found',
-            lead: response,
-        });
-    } else {
-        res.json({
-            status: 'Failed',
-            message: 'No Leads Found',
-        });
-    }
-}
-
-export async function queryLead2(req: Request, res: Response) {
+export async function queryLead(req: Request, res: Response) {
     const queries = [...new Set((req.query?.q as string).split(', '))]; // This removes duplicates.
     req.log({
         queries,
