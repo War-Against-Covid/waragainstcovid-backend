@@ -6,12 +6,14 @@ function getStates() {
     // here the states will be repeated, so we cast it into a Set and then back into an
     // array
     states = [...new Set(CITIES.map((data) => data.state.trim()))];
+    states.sort((a, b) => a.localeCompare(b));
     return states;
 }
 
 function getCities() {
     let cities = [];
     cities = CITIES.map((data) => data.city.trim());
+    cities.sort((a, b) => a.localeCompare(b));
     return cities;
 }
 
