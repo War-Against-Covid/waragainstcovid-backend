@@ -75,6 +75,7 @@ function processText(text: String): Lead {
             break;
         }
     }
+    // TODO: Add state from city
     if (!lead.state) throw new RequestError(400, 'Cannot parse state');
 
     // Fetch resources from text
@@ -128,15 +129,24 @@ async function getSourceFromId(id: string) {
 // Data is automatically extracted from the "text"
 // "sourceId" makes the route semi-private, protecting us from spam.
 export async function createLead(req: Request, res: Response) {
-    if (!req.body.text || !req.body.contact || !req.body.sourceId) throw new RequestError(400, 'missing parameters');
-    const leadFromtext = processText(req?.body.text);
-    const source = await getSourceFromId(req?.body.source);
+    const contactRegex = /(\b\d{9,12}\b)/i;
+    const { text, contacts, sourceId } = req.body;
+    if (!text || !contacts || !sourceId) throw new RequestError(400, 'missing parameters');
+    // eslint-disable-next-line no-restricted-syntax
+    for (const phone of contacts) {
+        if (!contactRegex.test(phone)) {
+            throw new RequestError(400, `malformed contact: ${phone}`);
+        }
+    }
+    const leadFromtext = processText(text);
+    const source = await getSourceFromId(sourceId);
+
     const lead = plainToClass(Lead, {
         // All newly created leads are set to unverified.
         ...leadFromtext,
         source,
-        contact: req?.body?.contact,
-        rawText: req?.body?.text,
+        contact: contacts,
+        rawText: text,
         verificationState: source ? VerificationState.source : VerificationState.notVerified,
         verifiedOn: undefined,
         lastUpdated: undefined,
