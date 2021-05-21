@@ -5,7 +5,7 @@ import { Lead, LeadModel } from '../Model/Leads';
 import { Plasma, Resource, VerificationState } from '../utils/constants';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils';
-import { getCities, getStates } from './data';
+import { getCities, getStates, getCitiesGroupedByState } from './data';
 import { SourcesModel } from '../Model/Sources';
 
 export async function getAllLeads(_: Request, res: Response) {
@@ -75,8 +75,21 @@ function processText(text: String): Lead {
             break;
         }
     }
-    // TODO: Add state from city
-    if (!lead.state) throw new RequestError(400, 'Cannot parse state');
+
+    // Add state from city if state not found.
+    if (!lead.state) {
+        const states = getCitiesGroupedByState();
+        // eslint-disable-next-line no-restricted-syntax
+        for (const state of Object.keys(states)) {
+            if (states[state].includes(lead.city)) {
+                lead.state = state;
+                break;
+            }
+        }
+    }
+
+    // wtf?
+    if (!lead.state) throw new RequestError(500, `Cannot parse state for city: ${lead.city}`);
 
     // Fetch resources from text
     // eslint-disable-next-line no-restricted-syntax

@@ -18,17 +18,17 @@ export function getCities() {
     return cities;
 }
 
-function getCitiesGroupedByState() {
-    const obj: { [key: string]: Array<string> } = {};
+export function getCitiesGroupedByState(lowerCased = false) {
+    const obj: { [key: string]: string[] } = {};
     const states = getStates();
     states.forEach((state) => {
         const stateArray: string[] = [];
         CITIES.forEach((data) => {
             if (data.state === state) {
-                stateArray.push(data.city);
+                stateArray.push(lowerCased ? data.city.toLowerCase() : data.city);
             }
         });
-        obj[state] = stateArray;
+        obj[lowerCased ? state.toLowerCase() : state] = stateArray;
     });
     return obj;
 }
