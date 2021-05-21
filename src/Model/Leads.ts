@@ -34,7 +34,7 @@ export class Lead extends DocumentCT {
     @IsEnum(VerificationState)
     public verificationState: VerificationState;
 
-    @prop({ required: true })
+    @prop({ required: true, type: [String] })
     @Expose()
     @IsNotEmpty()
     @MinLength(10, { each: true })

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Resource } from '../utils/constants';
+import { ResourcesCollapsed } from '../utils/constants';
 import CITIES from '../utils/cities.json';
 
 export function getStates() {
@@ -71,6 +71,6 @@ export function getLocationData(_req: Request, res: Response) {
 export function getResources(_req: Request, res: Response) {
     res.json({
         status: 'success',
-        resources: Object.values(Resource).map((val) => val.trim()),
+        resources: ResourcesCollapsed,
     });
 }

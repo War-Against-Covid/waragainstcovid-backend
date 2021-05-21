@@ -21,14 +21,14 @@ export enum Resource {
     flowmeter               = 'Flowmeter',
     foodDelivery            = 'Food Delivery',
     generalHelp             = 'General Help',
-    helpLine                = 'Helpline',
+    helpLine                = 'Helpline', // Missing
     homeICU                 = 'Home ICU',
-    normalBed               = 'Normal Bed',
+    normalBed               = 'Normal Bed', // Missing
     HRCTscan                = 'HRCT Scan',
     ICUbed                  = 'ICU Bed',
     liposomalAmphotericinB  = 'Liposomal Amphotericin B',
     mentalHealthCounselling = 'Mental Health Counselling',
-    nebulizer               = 'Nebulizer',
+    nebulizer               = 'Nebulizer', // Missing
     otherInfections         = 'Other Injections',
     otherMedicines          = 'Other Medicines',
     oxygenBeds              = 'Oxygen Beds',
@@ -38,12 +38,12 @@ export enum Resource {
     oxygenKit               = 'Oxygen Kit',
     oxygenRefilling         = 'Oxygen Refilling',
     oxymeter                = 'Oxymeter',
-    plasma                  = 'Plasma',
+    plasma                  = 'Plasma', // Missing
     remdesivir              = 'Remdesivir',
     RTPCRtesting            = 'RTPCR Testing',
     telemedicine            = 'Telemedicine',
     tocilizumab             = 'Tocilizumab',
-    transportation          = 'Transportation',
+    transportation          = 'Transportation', // Missing
     ventilator              = 'Ventilator',
 }
 // eslint-disable-next-line no-shadow
@@ -68,5 +68,54 @@ export enum VerificationState {
     outOfStock              = 'Out Of Stock',
     invalid                 = 'Invalid Do Not Show on Website',
 }
+
+export const ResourcesCollapsed = {
+    Oxygen: [
+        'Oxygen Beds',
+        'Oxygen Can',
+        'Oxygen Concentrator',
+        'Oxygen Cylinder',
+        'Oxygen Kit',
+        'Oxygen Refilling',
+        'Flowmeter',
+        'Oxymeter',
+    ],
+    'Beds and Equipments': [
+        'Hospital Beds',
+        'Isolation Beds',
+        'ECMO Beds',
+        'Oxygen Beds',
+        'ICU Bed',
+        'Ventilator',
+        'Home ICU',
+        'BiPap Machine',
+    ],
+    Testing: [
+        'RTPCR Testing',
+        'HRCT Scan',
+    ],
+    Medicine: [
+        'Bevacizumab',
+        'Fabiflu',
+        'Favipiravir ',
+        'Remdesivir',
+        'Tocilizumab ',
+        'Liposomal Amphotericin B',
+        'Telemedicine',
+        'Other Injections',
+        'Other Medicine',
+    ],
+    'Medical Professionals': [
+        'Doctor',
+        'E-Consult Doctor',
+        'Mental Health Counselling',
+    ],
+    Transportation: [
+        'Ambulance',
+        'Air Ambulance',
+    ],
+    'General Help': [] as any[],
+    'Food Delivery': [] as any[],
+};
 
 export const BCRYPT_HASH_RATE = 12;

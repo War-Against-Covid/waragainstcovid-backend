@@ -80,6 +80,7 @@ if (process.env.NODE_ENV !== ENV.TEST) {
                 useCreateIndex: true,
             });
             const adminBro = await setupAdminDashboard();
+            // const router = AdminBroExpress.buildRouter(adminBro);
             const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, adminDashOps);
             app.use(adminBro.options.rootPath, router);
             loadRoutes();
