@@ -11,6 +11,7 @@ import swaggerUI from 'swagger-ui-express';
 import AdminBroMongoose from '@admin-bro/mongoose';
 import AdminBroExpress from '@admin-bro/express';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { ENV } from './utils/constants';
 import { ErrorHandler, logger, ReqLogger } from './utils/logger';
 import RequestError from './utils/RequestError';
@@ -38,11 +39,24 @@ app.use((req, _, next) => {
 
 // Routes to be called when DB Connection was successful.
 const loadRoutes = () => {
-    app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
-    app.use('/api/leads', leadRoutes);
-    app.use('/api/data', dataRoutes);
+    const apiLimiter = rateLimit({
+        // to use redis-store instead of default memory store,
+        // install rate-limit-redis and uncomment the below lines
 
-    // app.use('/api/sample', sampleRoute);
+        // store: new RedisStore({}),
+        windowMs: 2 * 60 * 1000, // 2 minutes
+        max: 100,
+    });
+
+    // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+    // see https://expressjs.com/en/guide/behind-proxies.html
+    // app.set('trust proxy', 1);
+
+    app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
+    // added here just for demonstration purpose,
+    // to be moved to /api/needs when it is ready
+    app.use('/api/leads', apiLimiter, leadRoutes);
+    app.use('/api/data', dataRoutes);
 
     app.get('/api/ping', async (req, res) => {
         req.log('seems to be working');
