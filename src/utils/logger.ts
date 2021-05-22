@@ -51,14 +51,16 @@ export const ErrorHandler = (error: RequestError | any, req: Request, res: Respo
     });
     const method = code >= 400 ? 'error' : 'info';
     const mPath = `${req.method} ${req.path}`;
-    logger[method]({
-        path: mPath,
-        headers: req.headers,
-        body,
-        error: errorMessage,
-        trace: error?.stack?.toString(),
-        ip: req.ip,
-    });
+    if (code >= 500) {
+        logger[method]({
+            path: mPath,
+            headers: req.headers,
+            body,
+            error: errorMessage,
+            trace: error?.stack?.toString(),
+            ip: req.ip,
+        });
+    }
 };
 
 // it logs more detailed Request logs, compared to console.log

@@ -27,13 +27,16 @@ const sourcesResource = {
     },
 };
 
-const customProvider = new CustomImgUpload({ bucket: 'uploads' });
 const userResource = {
     resource: UserModel,
     options: {
+        // editProperties: ['fullName', 'username', 'password', 'type'],
         properties: {
             imageUrl: {
                 mimeType: {},
+                isVisible: {
+                    edit: false,
+                },
             },
             encryptedPassword: {
                 isVisible: false,
@@ -71,10 +74,10 @@ const userResource = {
         },
     },
     features: [uploadFeature({
-        provider: customProvider,
+        provider: new CustomImgUpload({ bucket: 'uploads' }),
         validation: {
             mimeTypes: ['image/png', 'image/jpeg'],
-            maxSize: 4e+6,
+            maxSize: 10e+6,
         },
         properties: {
             key: 'imageUrl',
@@ -83,7 +86,6 @@ const userResource = {
     })],
 };
 
-// TODO: Add custom validation and update fields like createdOn.
 const leadResource = {
     resource: LeadModel,
     options: {
