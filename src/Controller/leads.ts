@@ -8,8 +8,16 @@ import { validateObject } from '../utils';
 import { getCities, getStates, getCitiesGroupedByState } from './data';
 import { SourcesModel } from '../Model/Sources';
 
-export async function getAllLeads(_: Request, res: Response) {
-    const data = await LeadModel.find({}).lean();
+export async function getAllLeads(req: Request, res: Response) {
+    const queryPage = parseInt(req.query?.page as string, 10);
+    const page = Number.isNaN(queryPage) ? 0 : queryPage - 1;
+    const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
+
+    const data = await LeadModel.find({})
+        .skip(page * pageSize)
+        .limit(pageSize)
+        .lean();
+
     if (!data) {
         throw new RequestError(404, 'No Leads Present');
     } else {
@@ -151,12 +159,12 @@ export async function createLead(req: Request, res: Response) {
             throw new RequestError(400, `malformed contact: ${phone}`);
         }
     }
-    const leadFromtext = processText(text);
+    const leadFromText = processText(text);
     const source = await getSourceFromId(sourceId);
 
     const lead = plainToClass(Lead, {
         // All newly created leads are set to unverified.
-        ...leadFromtext,
+        ...leadFromText,
         source,
         contact: contacts,
         rawText: text,

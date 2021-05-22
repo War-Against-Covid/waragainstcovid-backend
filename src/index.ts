@@ -18,7 +18,6 @@ import RequestError from './utils/RequestError';
 import swaggerDoc from './openapi.json';
 import leadRoutes from './Routes/leads';
 import dataRoutes from './Routes/data';
-// import sampleRoute from './Routes/sample';
 import { adminDashOps, setupAdminDashboard } from './utils/adminBro';
 
 AdminBro.registerAdapter(AdminBroMongoose);
