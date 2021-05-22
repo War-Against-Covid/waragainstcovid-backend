@@ -10,22 +10,24 @@ import { Lead, LeadModel } from '../Model/Leads';
 import { getCities, getStates } from '../Controller/data';
 import { validateObject } from '.';
 import {
-    BCRYPT_HASH_RATE, Resource, Plasma, VerificationState,
+    BCRYPT_HASH_RATE, Plasma, Resource, VerificationState,
 } from './constants';
 import { SourcesModel } from '../Model/Sources';
+import CustomImgUpload from './ImageRiderProvider';
 
 const sourcesResource = {
     resource: SourcesModel,
     options: {
         actions: {
-            edit: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
-            delete: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
-            list: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
-            new: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+            edit: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            list: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            new: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
         },
     },
 };
 
+const customProvider = new CustomImgUpload({ bucket: 'uploads' });
 const userResource = {
     resource: UserModel,
     options: {
@@ -44,11 +46,11 @@ const userResource = {
             },
         },
         actions: {
-            edit: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
-            delete: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
-            list: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+            edit: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            list: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             new: {
-                isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin',
+                isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin',
                 before: async (request: any) => {
                     if (request.payload.password) {
                         request.payload = {
@@ -69,9 +71,7 @@ const userResource = {
         },
     },
     features: [uploadFeature({
-        provider: {
-            local: { bucket: 'uploads' },
-        },
+        provider: customProvider,
         validation: {
             mimeTypes: ['image/png', 'image/jpeg'],
             maxSize: 4e+6,
@@ -127,7 +127,7 @@ const leadResource = {
             },
         },
         actions: {
-            delete: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+            delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             new: {
                 // eslint-disable-next-line max-len
                 before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
