@@ -4,6 +4,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import 'express-async-errors';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import expressStatusMonitor from 'express-status-monitor';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import AdminBro from 'admin-bro';
@@ -37,11 +39,6 @@ app.use(
 
 app.use(cors());
 
-if (process.env.NODE_ENV === ENV.DEV) {
-    // eslint-disable-next-line
-    app.use(require('express-status-monitor')());
-}
-
 app.use((req, _, next) => {
     req.log = ReqLogger;
     next();
@@ -57,7 +54,9 @@ const loadRoutes = () => {
         windowMs: 2 * 60 * 1000, // 2 minutes
         max: 100,
     });
-
+    if (process.env.NODE_ENV === ENV.DEV) {
+        app.use(expressStatusMonitor());
+    }
     // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     // see https://expressjs.com/en/guide/behind-proxies.html
     // app.set('trust proxy', 1);
