@@ -16,6 +16,17 @@
         "tags": [
           "Leads"
         ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "number"
+            },
+            "required": false,
+            "description": "The page number to send, defaults to page=1. In-case of query pollution it'll return results of page 1(20 entries per page)"
+          }
+        ],
         "summary": "Get a list of all leads",
         "responses": {
           "200": {

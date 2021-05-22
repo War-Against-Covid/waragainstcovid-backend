@@ -10,7 +10,7 @@ import { SourcesModel } from '../Model/Sources';
 
 export async function getAllLeads(req: Request, res: Response) {
     const queryPage = parseInt(req.query?.page as string, 10);
-    const page = Number.isNaN(queryPage) ? 0 : queryPage - 1;
+    const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
     const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
 
     const data = await LeadModel.find({})
