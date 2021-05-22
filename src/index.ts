@@ -27,9 +27,20 @@ const app = express();
 app.use(express.json());
 
 // not a silver bullet, but helps
-app.use(helmet(process.env.NODE_ENV !== ENV.PROD ? { contentSecurityPolicy: false } : {}));
+app.use(
+    helmet(
+        process.env.NODE_ENV !== ENV.PROD
+            ? { contentSecurityPolicy: false }
+            : {},
+    ),
+);
 
 app.use(cors());
+
+if (process.env.NODE_ENV === ENV.DEV) {
+    // eslint-disable-next-line
+    app.use(require('express-status-monitor')());
+}
 
 app.use((req, _, next) => {
     req.log = ReqLogger;
@@ -94,7 +105,10 @@ if (process.env.NODE_ENV !== ENV.TEST) {
             });
             const adminBro = await setupAdminDashboard();
             // const router = AdminBroExpress.buildRouter(adminBro);
-            const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, adminDashOps);
+            const router = AdminBroExpress.buildAuthenticatedRouter(
+                adminBro,
+                adminDashOps,
+            );
             app.use(adminBro.options.rootPath, router);
             loadRoutes();
         } catch (err) {
