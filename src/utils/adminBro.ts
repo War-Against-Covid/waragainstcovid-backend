@@ -11,6 +11,19 @@ import { validateObject } from '.';
 import {
     BCRYPT_HASH_RATE, Resource, Plasma, VerificationState,
 } from './constants';
+import { SourcesModel } from '../Model/Sources';
+
+const sourcesResource = {
+    resource: SourcesModel,
+    options: {
+        actions: {
+            edit: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+            delete: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+            list: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+            new: { isAccessible: ({ currentAdmin }: {currentAdmin: User}) => currentAdmin && currentAdmin.type === 'admin' },
+        },
+    },
+};
 
 const userResource = {
     resource: UserModel,
@@ -155,7 +168,7 @@ const leadResource = {
 
 export const setupAdminDashboard = async () => {
     return new AdminBro({
-        resources: [userResource, leadResource],
+        resources: [userResource, leadResource, sourcesResource],
     });
 };
 

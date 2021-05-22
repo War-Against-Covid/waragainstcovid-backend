@@ -2,9 +2,11 @@
 import { Request, Response } from 'express';
 import { classToPlain, plainToClass } from 'class-transformer';
 import { Lead, LeadModel } from '../Model/Leads';
-import { VerificationState } from '../utils/constants';
+import { Plasma, Resource, VerificationState } from '../utils/constants';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils';
+import { getCities, getStates, getCitiesGroupedByState } from './data';
+import { SourcesModel } from '../Model/Sources';
 
 export async function getAllLeads(_: Request, res: Response) {
     const data = await LeadModel.find({}).lean();
@@ -48,13 +50,87 @@ export async function getVerifiedLeads(req: Request, res: Response) {
     });
 }
 
-// TODO: change this to current POST /api/.
+function processText(text: String): Lead {
+    // const contactRegex = /(\b\d{9,12}\b)/i;
+    const lowerText = text.toLowerCase();
+    const lead = {} as Lead;
+    lead.resource = [];
+    lead.plasma = [];
+
+    // Fetch cities from text
+    // eslint-disable-next-line no-restricted-syntax
+    for (const city of getCities()) {
+        if (lowerText.includes(city.toLowerCase())) {
+            lead.city = city;
+            break;
+        }
+    }
+    if (!lead.city) throw new RequestError(400, 'Cannot parse city');
+
+    // Fetch states from text
+    // eslint-disable-next-line no-restricted-syntax
+    for (const state of getStates()) {
+        if (lowerText.includes(state.toLowerCase())) {
+            lead.state = state;
+            break;
+        }
+    }
+
+    // Add state from city if state not found.
+    if (!lead.state) {
+        const states = getCitiesGroupedByState();
+        // eslint-disable-next-line no-restricted-syntax
+        for (const state of Object.keys(states)) {
+            if (states[state].includes(lead.city)) {
+                lead.state = state;
+                break;
+            }
+        }
+    }
+
+    // wtf?
+    if (!lead.state) throw new RequestError(500, `Cannot parse state for city: ${lead.city}`);
+
+    // Fetch resources from text
+    // eslint-disable-next-line no-restricted-syntax
+    for (const resource of Object.values(Resource)) {
+        // Add dictionaries here.
+        if (lowerText.includes(resource.toLowerCase())) {
+            lead.resource.push(resource);
+        }
+    }
+
+    if (lead.resource.length === 0) throw new RequestError(400, 'Cannot parse resources');
+
+    // Fetch plasma from text
+    if (lowerText.includes('plasma')) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const plasma of Object.values(Plasma)) {
+            if (lowerText.includes(plasma.toLowerCase())) {
+                lead.plasma.push(plasma);
+            }
+        }
+    }
+
+    // Fetch contact numbers from text
+    // eslint-disable-next-line max-len
+    // lead.contact = (lowerText.match(contactRegex) || []).map((e: any) => e.replace(contactRegex, '$1')) || [];
+
+    return lead;
+}
+
+async function getSourceFromId(id: string) {
+    if (!id) throw new RequestError(400, 'sourceId is missing');
+    const source = await SourcesModel.findById(id).lean();
+    if (!source) throw new RequestError(404, 'source not found or wrong sourceId');
+    return source.sourceName;
+}
+
 /**
- *  Current:
  *  POST /api/lead/
  *  payload: {
  *      text: "lorem ipsum", // Need to extract data from this text automatically
- *      source: "",
+ *      sourceId: "",
  *      contact: [
  *          "9876543211",
  *          "9988775545"
@@ -62,11 +138,29 @@ export async function getVerifiedLeads(req: Request, res: Response) {
  *  }
  *
  */
+
+// Data is automatically extracted from the "text"
+// "sourceId" makes the route semi-private, protecting us from spam.
 export async function createLead(req: Request, res: Response) {
+    const contactRegex = /(\b\d{9,12}\b)/i;
+    const { text, contacts, sourceId } = req.body;
+    if (!text || !contacts || !sourceId) throw new RequestError(400, 'missing parameters');
+    // eslint-disable-next-line no-restricted-syntax
+    for (const phone of contacts) {
+        if (!contactRegex.test(phone)) {
+            throw new RequestError(400, `malformed contact: ${phone}`);
+        }
+    }
+    const leadFromtext = processText(text);
+    const source = await getSourceFromId(sourceId);
+
     const lead = plainToClass(Lead, {
         // All newly created leads are set to unverified.
-        ...req.body,
-        verificationState: VerificationState.notVerified,
+        ...leadFromtext,
+        source,
+        contact: contacts,
+        rawText: text,
+        verificationState: source ? VerificationState.source : VerificationState.notVerified,
         verifiedOn: undefined,
         lastUpdated: undefined,
         updatedBy: undefined,
@@ -86,7 +180,7 @@ export async function strictSearch(req: Request, res: Response) {
     req.log({
         queries,
     });
-    const keywordRegex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'gi');
+    const keywordRegex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'i');
 
     const data = classToPlain(await LeadModel.find({}).lean());
 

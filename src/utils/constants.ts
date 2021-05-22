@@ -67,6 +67,7 @@ export enum VerificationState {
     verified                = 'Verified',
     outOfStock              = 'Out Of Stock',
     invalid                 = 'Invalid Do Not Show on Website',
+    source                  = 'Sourced',
 }
 
 export const ResourcesCollapsed = {

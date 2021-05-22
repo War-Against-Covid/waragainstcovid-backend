@@ -45,9 +45,13 @@
                     "type": "string",
                     "example": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
                   },
-                  "contact": {
+                  "sourceId": {
+                    "type": "string",
+                    "example": "609f323ab345"
+                  },
+                  "contacts": {
                     "type": "array",
-                    "description": "Plasma types available (Ignore if 'Plasma' not in `resource`).",
+                    "description": "Array of contact numbers in string",
                     "items": {
                       "type": "string"
                     },

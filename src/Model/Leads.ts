@@ -38,7 +38,7 @@ export class Lead extends DocumentCT {
     @Expose()
     @IsNotEmpty()
     @MinLength(10, { each: true })
-    @MaxLength(11, { each: true })
+    @MaxLength(13, { each: true })
     public contact: string[];
 
     @prop()
