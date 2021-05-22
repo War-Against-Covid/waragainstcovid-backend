@@ -30,6 +30,11 @@ export class User extends DocumentCT {
   @IsNotEmpty()
   public encryptedPassword!: string;
 
+  @prop({ default: 'default_profile.png' })
+  @Expose()
+  @IsNotEmpty()
+  public imageUrl!: string;
+
   @prop({ default: 'scout', enum: UserType })
   @Expose()
   @IsNotEmpty()

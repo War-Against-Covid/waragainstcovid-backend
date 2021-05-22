@@ -2,6 +2,7 @@
 import bcrypt from 'bcrypt';
 import AdminBro from 'admin-bro';
 import { AuthenticationOptions } from '@admin-bro/express';
+import uploadFeature from '@admin-bro/upload';
 import { plainToClass } from 'class-transformer';
 import { unflatten } from 'flat';
 import { User, UserModel } from '../Model/User';
@@ -29,6 +30,9 @@ const userResource = {
     resource: UserModel,
     options: {
         properties: {
+            imageUrl: {
+                mimeType: {},
+            },
             encryptedPassword: {
                 isVisible: false,
             },
@@ -64,6 +68,19 @@ const userResource = {
             },
         },
     },
+    features: [uploadFeature({
+        provider: {
+            local: { bucket: 'uploads' },
+        },
+        validation: {
+            mimeTypes: ['image/png', 'image/jpeg'],
+            maxSize: 4e+6,
+        },
+        properties: {
+            key: 'imageUrl',
+            mimeType: 'mimeType',
+        },
+    })],
 };
 
 // TODO: Add custom validation and update fields like createdOn.
