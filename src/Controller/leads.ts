@@ -16,6 +16,7 @@ export async function getAllLeads(req: Request, res: Response) {
     const data = await LeadModel.find({})
         .skip(page * pageSize)
         .limit(pageSize)
+        .sort({ verifiedOn: -1 })
         .lean();
 
     if (!data) {
