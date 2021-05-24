@@ -1,0 +1,26 @@
+on:
+  workflow_run:
+    workflows: ['Standard Jobs']
+    branches: [master]
+    types:
+      - completed
+
+name: Deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy step
+        uses: appleboy/ssh-action@master
+        env:
+          MYENV: ${{ secrets.ENV }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /home/waragainstcovid/waragainstcovid-backend
+            echo -e $MYENV > .env
+            just run-prod
