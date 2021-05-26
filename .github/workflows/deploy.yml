@@ -19,8 +19,11 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            (mkdir "${{ secrets.PROJ_PATH }}" || true)
-            cd "${{ secrets.PROJ_PATH }}"
-            (git pull origin master || git clone git@github.com:War-Against-Covid/waragainstcovid-backend.git .)
+            cd /home/waragainstcovid/waragainstcovid-website
+            git pull
+            just pull-backend
+            cd /home/waragainstcovid/waragainstcovid-website/waragainstcovid-backend
             echo -e "${{secrets.ENV}}" > .env
-            just run-prod
+            just build-prod
+            npx pm2 kill
+            npx pm2 start
