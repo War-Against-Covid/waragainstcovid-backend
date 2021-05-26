@@ -7,6 +7,15 @@ import DocumentCT from './Base';
 import { Resource, Plasma } from '../utils/constants';
 
 export class Need extends DocumentCT {
+    @prop()
+    @Expose()
+    public prescriptionUrl: string;
+
+    @prop({ required: true })
+    @Expose()
+    @IsNotEmpty()
+    public name: string;
+
     @prop({ required: true, type: [String], enum: Resource })
     @Expose()
     @IsEnum(Resource, { each: true })
