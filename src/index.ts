@@ -110,10 +110,11 @@ if (process.env.NODE_ENV !== ENV.TEST) {
             });
             const adminBro = await setupAdminDashboard();
             // const router = AdminBroExpress.buildRouter(adminBro);
-            const router = AdminBroExpress.buildAuthenticatedRouter(
-                adminBro,
-                adminDashOps,
-            );
+            const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, adminDashOps, null, {
+                proxy: true,
+                resave: false,
+                saveUninitialized: true,
+            });
             app.use(adminBro.options.rootPath, router);
             loadRoutes();
         } catch (err) {

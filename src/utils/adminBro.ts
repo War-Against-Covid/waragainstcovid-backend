@@ -20,6 +20,7 @@ const sourcesResource = {
     options: {
         actions: {
             edit: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            bulkDelete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             list: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             new: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
@@ -129,6 +130,7 @@ const leadResource = {
             },
         },
         actions: {
+            bulkDelete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             new: {
                 // eslint-disable-next-line max-len
