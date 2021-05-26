@@ -114,6 +114,9 @@ if (process.env.NODE_ENV !== ENV.TEST) {
                 proxy: true,
                 resave: false,
                 saveUninitialized: true,
+                cookie: {
+                    secure: true,
+                },
             });
             app.use(adminBro.options.rootPath, router);
             loadRoutes();
