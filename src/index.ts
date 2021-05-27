@@ -21,6 +21,7 @@ import RequestError from './utils/RequestError';
 import swaggerDoc from './openapi.json';
 import leadRoutes from './Routes/leads';
 import dataRoutes from './Routes/data';
+import formRoutes from './Routes/forms';
 import { adminDashOps, setupAdminDashboard } from './utils/adminBro';
 
 AdminBro.registerAdapter(AdminBroMongoose);
@@ -28,6 +29,12 @@ AdminBro.registerAdapter(AdminBroMongoose);
 const app = express();
 
 app.set('trust proxy', 1); // Trust reverse-proxy when using cookies with https
+
+app.use(
+    express.urlencoded({
+        extended: true,
+    }),
+);
 
 app.use(express.json());
 
@@ -71,6 +78,7 @@ const loadRoutes = () => {
     // to be moved to /api/needs when it is ready
     app.use('/api/leads', apiLimiter, leadRoutes);
     app.use('/api/data', dataRoutes);
+    app.use('/api/forms', formRoutes);
 
     app.get('/api/ping', async (req, res) => {
         req.log('seems to be working');
@@ -103,21 +111,31 @@ if (process.env.NODE_ENV !== ENV.TEST) {
         logger.info(`Started server on Port: ${port}`);
         try {
             // eslint-disable-next-line max-len
-            await mongoose.connect(process.env.NODE_ENV === ENV.PROD ? process.env.DB_URL_PROD : process.env.DB_URL, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                useCreateIndex: true,
-            });
+            await mongoose.connect(
+                process.env.NODE_ENV === ENV.PROD
+                    ? process.env.DB_URL_PROD
+                    : process.env.DB_URL,
+                {
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true,
+                    useCreateIndex: true,
+                },
+            );
             const adminBro = await setupAdminDashboard();
             // const router = AdminBroExpress.buildRouter(adminBro);
-            const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, adminDashOps, null, {
-                proxy: true,
-                resave: false,
-                saveUninitialized: true,
-                cookie: {
-                    secure: true,
+            const router = AdminBroExpress.buildAuthenticatedRouter(
+                adminBro,
+                adminDashOps,
+                null,
+                {
+                    proxy: true,
+                    resave: false,
+                    saveUninitialized: true,
+                    cookie: {
+                        secure: true,
+                    },
                 },
-            });
+            );
             app.use(adminBro.options.rootPath, router);
             loadRoutes();
         } catch (err) {
