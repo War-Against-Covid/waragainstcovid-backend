@@ -15,6 +15,9 @@ import AdminBroExpress from '@admin-bro/express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
+import session from 'express-session';
+import redis from 'redis';
+import connectRedis from 'connect-redis';
 import { ENV } from './utils/constants';
 import { ErrorHandler, logger, ReqLogger } from './utils/logger';
 import RequestError from './utils/RequestError';
@@ -30,13 +33,24 @@ const app = express();
 
 app.set('trust proxy', 1); // Trust reverse-proxy when using cookies with https
 
-app.use(
-    express.urlencoded({
-        extended: true,
-    }),
-);
-
 app.use(express.json());
+
+let RedisStore: any = null;
+let redisClient: any = null;
+if (process.env.NODE_ENV === ENV.PROD) {
+    RedisStore = connectRedis(session);
+    // Configure redis client
+    redisClient = redis.createClient({
+        password: process.env.REDIS_PASS,
+    });
+
+    redisClient.on('error', (err: any) => {
+        logger.info(`Could not establish a connection with redis. ${err}`);
+    });
+    redisClient.on('connect', () => {
+        logger.info('Connected to redis successfully');
+    });
+}
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
@@ -58,6 +72,10 @@ app.use((req, _, next) => {
 
 // Routes to be called when DB Connection was successful.
 const loadRoutes = () => {
+    // AdminBro causes problems when loading urlencoded middleware
+    app.use(express.urlencoded({
+        extended: true,
+    }));
     const apiLimiter = rateLimit({
         // to use redis-store instead of default memory store,
         // install rate-limit-redis and uncomment the below lines
@@ -127,13 +145,17 @@ if (process.env.NODE_ENV !== ENV.TEST) {
                 adminBro,
                 adminDashOps,
                 null,
-                {
+                process.env.NODE_ENV === ENV.PROD ? {
+                    store: new RedisStore({ client: redisClient }),
                     proxy: true,
                     resave: false,
-                    saveUninitialized: true,
+                    saveUninitialized: false,
                     cookie: {
                         secure: true,
                     },
+                } as any : {
+                    resave: false,
+                    saveUninitialized: false,
                 },
             );
             app.use(adminBro.options.rootPath, router);
