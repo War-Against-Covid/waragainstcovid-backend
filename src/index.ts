@@ -12,7 +12,7 @@ import AdminBro from 'admin-bro';
 import swaggerUI from 'swagger-ui-express';
 import AdminBroMongoose from '@admin-bro/mongoose';
 import AdminBroExpress from '@admin-bro/express';
-import rateLimit from 'express-rate-limit';
+// import rateLimit from 'express-rate-limit';
 import path from 'path';
 import session from 'express-session';
 import redis from 'redis';
