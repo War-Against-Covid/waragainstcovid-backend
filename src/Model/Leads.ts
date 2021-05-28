@@ -5,6 +5,7 @@ import {
 } from 'class-validator';
 import DocumentCT from './Base';
 import { Resource, Plasma, VerificationState } from '../utils/constants';
+import { Sources } from './Sources';
 
 export class Lead extends DocumentCT {
     @prop({ required: true, type: [String], enum: Resource })
@@ -57,9 +58,9 @@ export class Lead extends DocumentCT {
     @Expose()
     public verifiedOn?: Date;
 
-    @prop()
+    @prop({ type: () => Sources })
     @Expose()
-    public source?: string;
+    public source?: Sources;
 
     @prop()
     @Expose()

@@ -21,12 +21,12 @@ export async function getAllLeads(req: Request, res: Response) {
 
     if (!data) {
         throw new RequestError(404, 'No Leads Present');
-    } else {
-        res.json({
-            status: 'success',
-            leads: data,
-        });
     }
+
+    res.json({
+        status: 'success',
+        leads: data,
+    });
 }
 
 export async function getLeadById(req: Request, res: Response) {
@@ -132,7 +132,7 @@ async function getSourceFromId(id: string) {
     if (!id) throw new RequestError(400, 'sourceId is missing');
     const source = await SourcesModel.findById(id).lean();
     if (!source) throw new RequestError(404, 'source not found or wrong sourceId');
-    return source.sourceName;
+    return { sourceName: source.sourceName, sourceURL: source.sourceURL };
 }
 
 /**

@@ -8,12 +8,14 @@ import { unflatten } from 'flat';
 import { User, UserModel } from '../Model/User';
 import { Lead, LeadModel } from '../Model/Leads';
 import { getCities, getStates } from '../Controller/data';
-import { validateObject } from '.';
+import { validateAdminBro } from '.';
 import {
     BCRYPT_HASH_RATE, Plasma, Resource, VerificationState,
 } from './constants';
 import { SourcesModel } from '../Model/Sources';
 import CustomImgUpload from './ImageRiderProvider';
+import { ContactModel } from '../Model/Contact';
+import { ContributeModel } from '../Model/Contribute';
 
 const sourcesResource = {
     resource: SourcesModel,
@@ -23,6 +25,30 @@ const sourcesResource = {
             bulkDelete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             list: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            new: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+        },
+    },
+};
+
+const contactResource = {
+    resource: ContactModel,
+    options: {
+        actions: {
+            edit: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            bulkDelete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            new: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+        },
+    },
+};
+
+const contributeResource = {
+    resource: ContributeModel,
+    options: {
+        actions: {
+            edit: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            bulkDelete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             new: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
         },
     },
@@ -68,7 +94,7 @@ const userResource = {
                     const user = plainToClass(User, {
                         ...userObj,
                     });
-                    await validateObject(user);
+                    await validateAdminBro(user);
                     return request;
                 },
             },
@@ -124,6 +150,10 @@ const leadResource = {
                 // eslint-disable-next-line object-curly-newline
                 isVisible: { list: false, filter: true, show: true, edit: false },
             },
+            source: {
+                // eslint-disable-next-line object-curly-newline
+                isVisible: { list: false, filter: true, show: true, edit: false },
+            },
             createdOn: {
                 // eslint-disable-next-line object-curly-newline
                 isVisible: { list: false, filter: true, show: true, edit: false },
@@ -151,7 +181,7 @@ const leadResource = {
                         ...leadObj,
                         ...defaults,
                     });
-                    await validateObject(lead);
+                    await validateAdminBro(lead);
                     request.payload = {
                         ...request.payload,
                         ...defaults,
@@ -175,7 +205,7 @@ const leadResource = {
                         ...defaults,
                     });
 
-                    await validateObject(lead);
+                    await validateAdminBro(lead);
                     request.payload = {
                         ...request.payload,
                         ...defaults,
@@ -189,7 +219,8 @@ const leadResource = {
 
 export const setupAdminDashboard = async () => {
     return new AdminBro({
-        resources: [userResource, leadResource, sourcesResource],
+        // eslint-disable-next-line max-len
+        resources: [userResource, leadResource, sourcesResource, contributeResource, contactResource],
     });
 };
 

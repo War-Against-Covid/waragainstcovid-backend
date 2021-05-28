@@ -8,6 +8,10 @@ export class Sources extends DocumentCT {
     @Expose()
     @IsNotEmpty()
     public sourceName: string;
+
+    @prop()
+    @Expose()
+    public sourceURL: string;
 }
 
 export const SourcesModel = getModelForClass(Sources);
