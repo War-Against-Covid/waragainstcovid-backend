@@ -12,7 +12,6 @@ import AdminBro from 'admin-bro';
 import swaggerUI from 'swagger-ui-express';
 import AdminBroMongoose from '@admin-bro/mongoose';
 import AdminBroExpress from '@admin-bro/express';
-import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import session from 'express-session';
@@ -53,15 +52,6 @@ if (process.env.NODE_ENV === ENV.PROD) {
 }
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
-// not a silver bullet, but helps
-app.use(
-    helmet(
-        process.env.NODE_ENV !== ENV.PROD
-            ? { contentSecurityPolicy: false }
-            : {},
-    ),
-);
 
 app.use(cors());
 
