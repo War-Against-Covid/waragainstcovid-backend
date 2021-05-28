@@ -66,14 +66,14 @@ const loadRoutes = () => {
     app.use(express.urlencoded({
         extended: true,
     }));
-    const apiLimiter = rateLimit({
-        // to use redis-store instead of default memory store,
-        // install rate-limit-redis and uncomment the below lines
+    // const apiLimiter = rateLimit({
+    //     // to use redis-store instead of default memory store,
+    //     // install rate-limit-redis and uncomment the below lines
 
-        // store: new RedisStore({}),
-        windowMs: 2 * 60 * 1000, // 2 minutes
-        max: 100,
-    });
+    //     // store: new RedisStore({}),
+    //     windowMs: 2 * 60 * 1000, // 2 minutes
+    //     max: 100,
+    // });
     if (process.env.NODE_ENV === ENV.DEV) {
         app.use(expressStatusMonitor());
     }
@@ -84,7 +84,7 @@ const loadRoutes = () => {
     app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
     // added here just for demonstration purpose,
     // to be moved to /api/needs when it is ready
-    app.use('/api/leads', apiLimiter, leadRoutes);
+    app.use('/api/leads', leadRoutes);
     app.use('/api/data', dataRoutes);
     app.use('/api/forms', formRoutes);
 
