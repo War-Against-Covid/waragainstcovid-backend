@@ -32,3 +32,12 @@ export async function handleContactForm(req: Request, res: Response) {
         contact,
     });
 }
+
+/* handle the post your need form */
+export async function handlePostYourNeedForm(req: Request, res: Response) {
+    const { state, city, phone } = req.body;
+    res.json({
+        status: 'success',
+        message: `${state} ${city} ${phone}`,
+    });
+}
