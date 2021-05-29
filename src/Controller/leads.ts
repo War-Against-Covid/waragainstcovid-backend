@@ -2,7 +2,9 @@
 import { Request, Response } from 'express';
 import { classToPlain, plainToClass } from 'class-transformer';
 import { Lead, LeadModel } from '../Model/Leads';
-import { Plasma, Resource, ResourceMatch, VerificationState } from '../utils/constants';
+import {
+    Plasma, Resource, ResourceMatch, VerificationState,
+} from '../utils/constants';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils';
 import { getCities, getStates, getCitiesGroupedByState } from './data';
