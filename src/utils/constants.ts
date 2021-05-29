@@ -7,6 +7,32 @@ export const ENV = {
     PROD: 'PROD',
 };
 
+export const ResourceMatch: { [key: string]: string[] } = {
+    'Air Ambulance': ['Air Ambulances'],
+    Ambulance: ['Ambulances'],
+    'BiPap Machine': ['BiPap Machines'],
+    Doctor: ['Doctors', 'Doc', 'Docs'],
+    'E-Consult Doctor': ['E-Consult Doctors', 'E-Doc', 'E-Docs', 'EDoc', 'EDocs', 'E Doc', 'E Docs'],
+    'ECMO Beds': ['ECMO Bed', 'ECMO'],
+    Flowmeter: ['Flowmeters'],
+    'Food Delivery': ['Food Deliveries'],
+    'Hospital Bed': ['Hospital bed', 'Hospital beds', 'Normal Bed', 'bed'],
+    'HRCT Scan': ['HRCT Scans', 'HRCT'],
+    'ICU Bed': ['ICU Beds', 'ICU'],
+    'Mental Health Counselling': ['Mental Health', 'Mental Counselling'],
+    'Oxygen Beds': ['Oxygen Bed', 'Oxy Bed', 'Oxy Beds'],
+    'Oxygen Can': ['Oxygen Cans', 'Oxygen Can', 'Oxy can', 'Oxy cans'],
+    'Oxygen Concentrator': ['Oxygen Concentrators', 'Concentrator', 'Concentrators'],
+    'Oxygen Cylinder': ['Oxygen Cylinders', 'Cylinder', 'Cylinders'],
+    'Oxygen Kit': ['Oxygen Kits', 'Oxy kit', 'Oxy kits', 'Oxi kit', 'Oxi kits'],
+    'Oxygen Refilling': ['Oxygen Refillings', 'Oxy Refillings', 'Oxy Refilling'],
+    Oxymeter: ['Oxymeters', 'Oximeter', 'Oximeters'],
+    'RTPCR Testing': ['RTPCR Testings', 'RTPCR'],
+    Telemedicine: ['Telemedicines'],
+    Transportation: ['Transportations'],
+    Ventilator: ['Ventilators', 'Venti bed', 'venti bed', 'venti Bed', 'Venti Bed'],
+};
+
 // eslint-disable-next-line no-shadow
 export enum Resource {
     airAmbulance            = 'Air Ambulance',
@@ -23,7 +49,7 @@ export enum Resource {
     generalHelp             = 'General Help',
     helpLine                = 'Helpline', // Missing
     homeICU                 = 'Home ICU',
-    normalBed               = 'Normal Bed', // Missing
+    hospitalBed             = 'Hospital Bed',
     HRCTscan                = 'HRCT Scan',
     ICUbed                  = 'ICU Bed',
     liposomalAmphotericinB  = 'Liposomal Amphotericin B',
@@ -38,7 +64,7 @@ export enum Resource {
     oxygenKit               = 'Oxygen Kit',
     oxygenRefilling         = 'Oxygen Refilling',
     oxymeter                = 'Oxymeter',
-    plasma                  = 'Plasma', // Missing
+    plasma                  = 'Plasma',
     remdesivir              = 'Remdesivir',
     RTPCRtesting            = 'RTPCR Testing',
     telemedicine            = 'Telemedicine',
@@ -114,6 +140,16 @@ export const ResourcesCollapsed = {
     Transportation: [
         'Ambulance',
         'Air Ambulance',
+    ],
+    Plasma: [
+        'A+',
+        'A-',
+        'B+',
+        'B-',
+        'AB+',
+        'AB-',
+        'O+',
+        'O-',
     ],
     'General Help': [] as any[],
     'Food Delivery': [] as any[],

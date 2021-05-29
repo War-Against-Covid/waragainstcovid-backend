@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { ResourcesCollapsed } from '../utils/constants';
 import CITIES from '../utils/cities.json';
+import { LeadModel } from '../Model/Leads';
+import { NeedModel, NeedStatus } from '../Model/Need';
 
 export function getStates() {
     let states = [];
@@ -78,11 +80,15 @@ export function getResources(_req: Request, res: Response) {
 }
 
 /* get stats for "Lives Touched" section of the front page */
-export function getStats(_req: Request, res: Response) {
+export async function getStats(_req: Request, res: Response) {
+    const leads = await LeadModel.find({}).lean();
+    const needs = await NeedModel.find({
+        status: NeedStatus.resolved,
+    });
     res.json({
         stats: {
-            'Leads Generated': 6225,
-            'Lives Touched': 2387,
+            'Leads Generated': leads.length,
+            'Lives Touched': needs.length,
         },
         status: 'success',
     });

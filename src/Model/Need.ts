@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Expose } from 'class-transformer';
 import { getModelForClass, prop } from '@typegoose/typegoose';
 import {
@@ -5,6 +6,14 @@ import {
 } from 'class-validator';
 import DocumentCT from './Base';
 import { Resource, Plasma } from '../utils/constants';
+
+// eslint-disable-next-line no-shadow
+export enum NeedStatus {
+    // eslint-disable-next-line no-unused-vars
+    resolved = 'Resolved',
+    // eslint-disable-next-line no-unused-vars
+    pending = 'Pending',
+}
 
 export class Need extends DocumentCT {
     @prop()
@@ -50,25 +59,11 @@ export class Need extends DocumentCT {
     @MaxLength(11, { each: true })
     public contact: string[];
 
-    // @prop()
-    // @Expose()
-    // public mapLink?: string;
-
-    // @prop()
-    // @Expose()
-    // public rawText?: string;
-
-    // @prop()
-    // @Expose()
-    // public comments?: string;
-
-    // @prop()
-    // @Expose()
-    // public verifiedOn?: Date;
-
-    // @prop()
-    // @Expose()
-    // public source?: string;
+    @prop({ required: true, enum: NeedStatus })
+    @Expose()
+    @IsNotEmpty()
+    @IsEnum(NeedStatus)
+    public status: NeedStatus;
 
     @prop()
     @Expose()

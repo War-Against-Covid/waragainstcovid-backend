@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import { classToPlain, plainToClass } from 'class-transformer';
 import { Lead, LeadModel } from '../Model/Leads';
-import { Plasma, Resource, VerificationState } from '../utils/constants';
+import { Plasma, Resource, ResourceMatch, VerificationState } from '../utils/constants';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils';
 import { getCities, getStates, getCitiesGroupedByState } from './data';
@@ -109,10 +109,9 @@ function processText(text: String): Lead {
         }
     }
 
-    if (lead.resource.length === 0) throw new RequestError(400, 'Cannot parse resources');
-
     // Fetch plasma from text
     if (lowerText.includes('plasma')) {
+        lead.resource.push(Resource.plasma);
         // eslint-disable-next-line no-restricted-syntax
         for (const plasma of Object.values(Plasma)) {
             if (lowerText.includes(plasma.toLowerCase())) {
@@ -121,10 +120,28 @@ function processText(text: String): Lead {
         }
     }
 
+    // Fetch resource match patch
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key of Object.keys(ResourceMatch)) {
+        // eslint-disable-next-line no-continue
+        if (lead.resource.includes(key as Resource)) continue;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const resourceStr of ResourceMatch[key]) {
+            if (lowerText.includes(resourceStr.toLowerCase())) {
+                if (!Object.values(Resource).includes(key as Resource)) {
+                    throw new RequestError(500, `inconsistent Resource in map, please contact backend admin: ${key}`);
+                }
+                lead.resource.push(key as Resource);
+                break;
+            }
+        }
+    }
+
+    if (lead.resource.length === 0) throw new RequestError(400, 'Cannot parse resources');
+
     // Fetch contact numbers from text
     // eslint-disable-next-line max-len
     // lead.contact = (lowerText.match(contactRegex) || []).map((e: any) => e.replace(contactRegex, '$1')) || [];
-
     return lead;
 }
 
