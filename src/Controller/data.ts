@@ -25,7 +25,9 @@ export function getCitiesGroupedByState(lowerCased = false) {
         const stateArray: string[] = [];
         CITIES.forEach((data) => {
             if (data.state === state) {
-                stateArray.push(lowerCased ? data.city.toLowerCase() : data.city);
+                stateArray.push(
+                    lowerCased ? data.city.toLowerCase() : data.city,
+                );
             }
         });
         obj[lowerCased ? state.toLowerCase() : state] = stateArray;
@@ -72,5 +74,16 @@ export function getResources(_req: Request, res: Response) {
     res.json({
         status: 'success',
         resources: ResourcesCollapsed,
+    });
+}
+
+/* get stats for "Lives Touched" section of the front page */
+export function getStats(_req: Request, res: Response) {
+    res.json({
+        stats: {
+            'Leads Generated': 6225,
+            'Lives Touched': 2387,
+        },
+        status: 'success',
     });
 }
