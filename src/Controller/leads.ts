@@ -207,9 +207,9 @@ export async function strictSearch(req: Request, res: Response) {
     const queries = [...new Set((req.query?.q as string).split(', '))]; // This removes duplicates.
     const keywordRegex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'i');
 
-    // const queryPage = parseInt(req.query?.page as string, 10);
-    // const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
-    // const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
+    const queryPage = parseInt(req.query?.page as string, 10);
+    const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
+    const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
     const leadsData = await LeadModel.find({}).lean();
 
     const data = classToPlain(leadsData);
@@ -238,15 +238,21 @@ export async function strictSearch(req: Request, res: Response) {
     });
 
     // Convert _id back to hex
-    const final = result.map((elem: any) => {
+    let final = result.map((elem: any) => {
         const temp = elem;
         temp._id = (temp._id.id as Buffer).toString('hex');
         return temp;
     });
 
+    // page = 0 => 0, 10
+    // page = 1 => 10, 20
+    // page = 2 => 20, 30
+    final = final.slice(page * pageSize, (page * pageSize) + pageSize);
+
     res.json({
         status: 'success',
         leads: final,
+        totalPages: Math.ceil(final.length / pageSize),
     });
 }
 
@@ -254,9 +260,9 @@ export async function keywordSearch(req: Request, res: Response) {
     const queries = req.query.q as string;
     const keywordRegex = new RegExp(queries.split(', ').join('|'), 'gi');
 
-    // const queryPage = parseInt(req.query?.page as string, 10);
-    // const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
-    // const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
+    const queryPage = parseInt(req.query?.page as string, 10);
+    const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
+    const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
     const leadsData = await LeadModel.find({}).lean();
 
     const data = classToPlain(leadsData);
@@ -276,15 +282,20 @@ export async function keywordSearch(req: Request, res: Response) {
     });
 
     // Convert _id back to hex
-    const final = result.map((elem: any) => {
+    let final = result.map((elem: any) => {
         const temp = elem;
         temp._id = (temp._id.id as Buffer).toString('hex');
         return temp;
     });
 
+    // page = 0 => 0, 10
+    // page = 1 => 10, 20
+    // page = 2 => 20, 30
+    final = final.slice(page * pageSize, (page * pageSize) + pageSize);
+
     res.json({
         status: 'success',
         leads: final,
-        totalPages: 100,
+        totalPages: Math.ceil(final.length / pageSize),
     });
 }
