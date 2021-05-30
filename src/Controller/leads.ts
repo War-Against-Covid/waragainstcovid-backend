@@ -223,11 +223,11 @@ export async function strictSearch(req: Request, res: Response) {
                 if (typeof objValue === 'object') {
                     Object.values(objValue).forEach((val) => {
                         if (typeof val === 'string' || typeof val === 'number') {
-                            matches.push(...(String(val).match(keywordRegex) || []).map((e: any) => e.replace(keywordRegex, '$1')));
+                            matches.push(...(String(val).match(keywordRegex) || []).map((e: any) => e?.replace(keywordRegex, '$1')));
                         }
                     });
                 } else if (typeof objValue === 'string' || typeof objValue === 'number') {
-                    matches.push(...((String(objValue).match(keywordRegex) || []).map((e: any) => e.replace(keywordRegex, '$1'))));
+                    matches.push(...((String(objValue).match(keywordRegex) || []).map((e: any) => e?.replace(keywordRegex, '$1'))));
                 }
                 matches.forEach((match) => {
                     groupsFound.add(match);
@@ -238,7 +238,7 @@ export async function strictSearch(req: Request, res: Response) {
     });
 
     // Convert _id back to hex
-    let final = result.map((elem: any) => {
+    const final = result.map((elem: any) => {
         const temp = elem;
         temp._id = (temp._id.id as Buffer).toString('hex');
         return temp;
@@ -249,11 +249,11 @@ export async function strictSearch(req: Request, res: Response) {
     // page = 0 => 0, 10
     // page = 1 => 10, 20
     // page = 2 => 20, 30
-    final = final.slice(page * pageSize, (page * pageSize) + pageSize);
+    const finalRes = final.slice(page * pageSize, (page * pageSize) + pageSize);
 
     res.json({
         status: 'success',
-        leads: final,
+        leads: finalRes,
         totalPages,
     });
 }
@@ -284,7 +284,7 @@ export async function keywordSearch(req: Request, res: Response) {
     });
 
     // Convert _id back to hex
-    let final = result.map((elem: any) => {
+    const final = result.map((elem: any) => {
         const temp = elem;
         temp._id = (temp._id.id as Buffer).toString('hex');
         return temp;
@@ -295,11 +295,11 @@ export async function keywordSearch(req: Request, res: Response) {
     // page = 0 => 0, 10
     // page = 1 => 10, 20
     // page = 2 => 20, 30
-    final = final.slice(page * pageSize, (page * pageSize) + pageSize);
+    const finalRes = final.slice(page * pageSize, (page * pageSize) + pageSize);
 
     res.json({
         status: 'success',
-        leads: final,
+        leads: finalRes,
         totalPages,
     });
 }
