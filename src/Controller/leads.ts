@@ -206,7 +206,9 @@ export async function createLead(req: Request, res: Response) {
 export async function strictSearch(req: Request, res: Response) {
     const queries = [...new Set((req.query?.q as string).split(', '))]; // This removes duplicates.
     const keywordRegex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'i');
-
+    req.log({
+        queries,
+    });
     const queryPage = parseInt(req.query?.page as string, 10);
     const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
     const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
@@ -270,10 +272,6 @@ export async function keywordSearch(req: Request, res: Response) {
     const data = classToPlain(leadsData);
 
     const result = data.filter((doc: any) => {
-        req.log({
-            keys: Object.keys(doc),
-        });
-
         // eslint-disable-next-line no-restricted-syntax
         for (const key of Object.keys(doc)) {
             if (keywordRegex.test(doc[key])) {
