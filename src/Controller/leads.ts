@@ -244,6 +244,8 @@ export async function strictSearch(req: Request, res: Response) {
         return temp;
     });
 
+    const totalPages = Math.ceil(final.length / pageSize);
+
     // page = 0 => 0, 10
     // page = 1 => 10, 20
     // page = 2 => 20, 30
@@ -252,7 +254,7 @@ export async function strictSearch(req: Request, res: Response) {
     res.json({
         status: 'success',
         leads: final,
-        totalPages: Math.ceil(final.length / pageSize),
+        totalPages,
     });
 }
 
@@ -288,6 +290,8 @@ export async function keywordSearch(req: Request, res: Response) {
         return temp;
     });
 
+    const totalPages = Math.ceil(final.length / pageSize);
+
     // page = 0 => 0, 10
     // page = 1 => 10, 20
     // page = 2 => 20, 30
@@ -296,6 +300,6 @@ export async function keywordSearch(req: Request, res: Response) {
     res.json({
         status: 'success',
         leads: final,
-        totalPages: Math.ceil(final.length / pageSize),
+        totalPages,
     });
 }
