@@ -207,10 +207,10 @@ export async function strictSearch(req: Request, res: Response) {
     const queries = [...new Set((req.query?.q as string).split(', '))]; // This removes duplicates.
     const keywordRegex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'i');
 
-    const queryPage = parseInt(req.query?.page as string, 10);
-    const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
-    const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
-    const leadsData = await LeadModel.find({}).skip(page * pageSize).limit(pageSize).lean();
+    // const queryPage = parseInt(req.query?.page as string, 10);
+    // const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
+    // const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
+    const leadsData = await LeadModel.find({}).lean();
 
     const data = classToPlain(leadsData);
 
@@ -254,10 +254,10 @@ export async function keywordSearch(req: Request, res: Response) {
     const queries = req.query.q as string;
     const keywordRegex = new RegExp(queries.split(', ').join('|'), 'gi');
 
-    const queryPage = parseInt(req.query?.page as string, 10);
-    const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
-    const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
-    const leadsData = await LeadModel.find({}).skip(page * pageSize).limit(pageSize).lean();
+    // const queryPage = parseInt(req.query?.page as string, 10);
+    // const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
+    // const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
+    const leadsData = await LeadModel.find({}).lean();
 
     const data = classToPlain(leadsData);
 
