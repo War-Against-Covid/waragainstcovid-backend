@@ -285,5 +285,6 @@ export async function keywordSearch(req: Request, res: Response) {
     res.json({
         status: 'success',
         leads: final,
+        totalPages: 100,
     });
 }
