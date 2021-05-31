@@ -61,6 +61,7 @@ export async function getVerifiedLeads(req: Request, res: Response) {
     });
 }
 
+// TODO: Word boundary check
 function processText(text: String): Lead {
     // const contactRegex = /(\b\d{9,12}\b)/i;
     const lowerText = text.toLowerCase();
@@ -101,6 +102,18 @@ function processText(text: String): Lead {
 
     // wtf?
     if (!lead.state) throw new RequestError(500, `Cannot parse state for city: ${lead.city}`);
+
+    // Checks if parsed city is of parsed state or not
+    const states = getCitiesGroupedByState();
+    let foundCity = false;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const city of states[lead.state]) {
+        if (city.toLowerCase() === lead.city.toLowerCase()) {
+            foundCity = true;
+            break;
+        }
+    }
+    if (!foundCity) throw new RequestError(400, `Invalid State/City pair: State: ${lead.state}, City: ${lead.city}`);
 
     // Fetch resources from text
     // eslint-disable-next-line no-restricted-syntax
@@ -206,9 +219,6 @@ export async function createLead(req: Request, res: Response) {
 export async function strictSearch(req: Request, res: Response) {
     const queries = [...new Set((req.query?.q as string).split(', '))]; // This removes duplicates.
     const keywordRegex = new RegExp(queries.map((q) => (`(${q})`)).join('|'), 'i');
-    req.log({
-        queries,
-    });
     const queryPage = parseInt(req.query?.page as string, 10);
     const page = Number.isNaN(queryPage) || queryPage <= 0 ? 0 : queryPage - 1;
     const pageSize = parseInt(process.env.PAGE_LIMIT, 10);
@@ -217,7 +227,7 @@ export async function strictSearch(req: Request, res: Response) {
     const data = classToPlain(leadsData);
 
     const result = data.filter((doc: any) => {
-        const groupsFound = new Set();
+        const groupsFound = new Set<string>();
         Object.keys(doc).forEach((key) => {
             const objValue = doc[key];
             if (keywordRegex.test(objValue)) {
@@ -225,18 +235,18 @@ export async function strictSearch(req: Request, res: Response) {
                 if (typeof objValue === 'object') {
                     Object.values(objValue).forEach((val) => {
                         if (typeof val === 'string' || typeof val === 'number') {
-                            matches.push(...(String(val).match(keywordRegex) || []).map((e: any) => e?.replace(keywordRegex, '$1')));
+                            matches.push(String(val)?.match(keywordRegex)?.[0]);
                         }
                     });
                 } else if (typeof objValue === 'string' || typeof objValue === 'number') {
-                    matches.push(...((String(objValue).match(keywordRegex) || []).map((e: any) => e?.replace(keywordRegex, '$1'))));
+                    matches.push(String(objValue)?.match(keywordRegex)?.[0]);
                 }
                 matches.forEach((match) => {
                     groupsFound.add(match);
                 });
             }
         });
-        return groupsFound.size === queries.length;
+        return groupsFound.size >= queries.length;
     });
 
     // Convert _id back to hex
