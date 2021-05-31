@@ -16,6 +16,7 @@ import { SourcesModel } from '../Model/Sources';
 import CustomImgUpload from './ImageRiderProvider';
 import { ContactModel } from '../Model/Contact';
 import { ContributeModel } from '../Model/Contribute';
+import { Need, NeedModel } from '../Model/Need';
 
 const sourcesResource = {
     resource: SourcesModel,
@@ -41,6 +42,99 @@ const contactResource = {
             new: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
         },
     },
+};
+
+const needResource = {
+    resource: NeedModel,
+    options: {
+        properties: {
+            prescriptionUrl: {
+                mimeType: {},
+                isVisible: {
+                    edit: false,
+                },
+            },
+            state: {
+                availableValues: getStates().map((value) => ({ value, label: value })),
+            },
+            city: {
+                availableValues: getCities().map((value) => ({ value, label: value })),
+            },
+            resource: {
+                isVisible: {
+                    list: true, edit: true, filter: true, show: true,
+                },
+                // eslint-disable-next-line max-len
+                availableValues: Object.values(Resource).map((value) => ({ value, label: value })),
+            },
+            lastUpdated: {
+                // eslint-disable-next-line object-curly-newline
+                isVisible: { list: false, filter: true, show: true, edit: false },
+            },
+            updatedBy: {
+                // eslint-disable-next-line object-curly-newline
+                isVisible: { list: false, filter: true, show: true, edit: false },
+            },
+            createdOn: {
+                // eslint-disable-next-line object-curly-newline
+                isVisible: { list: false, filter: true, show: true, edit: false },
+            },
+        },
+        actions: {
+            bulkDelete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
+            new: {
+                before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
+                    const needObj = unflatten(request.payload) as {};
+                    const need = plainToClass(Need, {
+                        ...needObj,
+                        updatedBy: currentAdmin.username,
+                        createdOn: new Date(),
+                    });
+                    await validateAdminBro(need);
+                    request.payload = {
+                        ...request.payload,
+                        ...need,
+                    };
+                    return request;
+                },
+            },
+            edit: {
+                before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
+                    if (request.method !== 'post') return request;
+                    const needObj = unflatten(request.payload) as {};
+                    const defaults: any = {
+                        // eslint-disable-next-line max-len
+                        lastUpdated: new Date(),
+                        updatedBy: currentAdmin.username,
+                    };
+
+                    const need = plainToClass(Need, {
+                        ...needObj,
+                        ...defaults,
+                    });
+
+                    await validateAdminBro(need);
+                    request.payload = {
+                        ...request.payload,
+                        ...defaults,
+                    };
+                    return request;
+                },
+            },
+        },
+    },
+    features: [uploadFeature({
+        provider: new CustomImgUpload({ bucket: 'uploads' }),
+        validation: {
+            mimeTypes: ['image/png', 'image/jpeg'],
+            maxSize: 10e+6,
+        },
+        properties: {
+            key: 'prescriptionUrl',
+            mimeType: 'mimeType',
+        },
+    })],
 };
 
 const contributeResource = {
@@ -168,11 +262,12 @@ const leadResource = {
                 // eslint-disable-next-line max-len
                 before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
                     if (request.method !== 'post') return request;
-                    const leadObj = unflatten(request.payload) as {};
+                    const leadObj = unflatten(request.payload) as any;
 
                     const defaults: any = {
                         // All newly created leads are set to unverified.
-                        verificationState: VerificationState.notVerified,
+                        // eslint-disable-next-line max-len
+                        verificationState: request.payload.verificationState ? request.payload.verificationState : VerificationState.notVerified,
                         verifiedOn: undefined,
                         lastUpdated: undefined,
                         updatedBy: currentAdmin.username,
@@ -222,7 +317,7 @@ const leadResource = {
 export const setupAdminDashboard = async () => {
     return new AdminBro({
         // eslint-disable-next-line max-len
-        resources: [userResource, leadResource, sourcesResource, contributeResource, contactResource],
+        resources: [userResource, leadResource, sourcesResource, contributeResource, contactResource, needResource],
     });
 };
 

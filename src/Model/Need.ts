@@ -12,7 +12,9 @@ export enum NeedStatus {
     // eslint-disable-next-line no-unused-vars
     resolved = 'Resolved',
     // eslint-disable-next-line no-unused-vars
-    pending = 'Pending',
+    inprogress = 'In Progress',
+    // eslint-disable-next-line no-unused-vars
+    unresolved = 'Unresolved',
 }
 
 export class Need extends DocumentCT {
@@ -29,11 +31,6 @@ export class Need extends DocumentCT {
     @Expose()
     @IsEnum(Resource, { each: true })
     public resource: Resource[];
-
-    @prop({ type: [String], enum: Plasma })
-    @Expose()
-    @IsEnum(Plasma, { each: true })
-    public plasma?: Plasma[];
 
     // TODO: Add auto state detection from city.
     @prop({ required: true })
@@ -55,8 +52,8 @@ export class Need extends DocumentCT {
     @prop({ required: true })
     @Expose()
     @IsNotEmpty()
-    @MinLength(10, { each: true })
-    @MaxLength(11, { each: true })
+    @MinLength(9, { each: true })
+    @MaxLength(13, { each: true })
     public contact: string[];
 
     @prop({ required: true, enum: NeedStatus })

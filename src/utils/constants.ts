@@ -85,7 +85,6 @@ export enum Plasma {
 }
 // eslint-disable-next-line no-shadow
 export enum VerificationState {
-    new                     = 'New Sourced',
     notVerified             = 'Not Verified',
     notReachable            = 'Contact Not Reachable',
     negative                = 'Negative Feedback from User',
