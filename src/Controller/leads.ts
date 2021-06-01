@@ -242,10 +242,16 @@ export async function strictSearch(req: Request, res: Response) {
                     matches.push(String(objValue)?.match(keywordRegex)?.[0]);
                 }
                 matches.forEach((match) => {
-                    groupsFound.add(match);
+                    if (match) {
+                        groupsFound.add(match.toLowerCase());
+                    }
                 });
             }
         });
+        // console.log(groupsFound.size);
+        // groupsFound.forEach((value) => {
+        //     console.log(`gFound val: ${value}`);
+        // });
         return groupsFound.size >= queries.length;
     });
 
