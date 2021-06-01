@@ -1,5 +1,9 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable func-names */
 import { Expose } from 'class-transformer';
-import { getModelForClass, prop } from '@typegoose/typegoose';
+import {
+    getModelForClass, prop, Ref, Pre,
+} from '@typegoose/typegoose';
 import {
     IsNotEmpty, IsEnum, MinLength, MaxLength,
 } from 'class-validator';
@@ -7,6 +11,9 @@ import DocumentCT from './Base';
 import { Resource, Plasma, VerificationState } from '../utils/constants';
 import { Sources } from './Sources';
 
+@Pre<Lead>('find', function () {
+    this.populate('source');
+})
 export class Lead extends DocumentCT {
     @prop({ required: true, type: [String], enum: Resource })
     @Expose()
@@ -58,9 +65,9 @@ export class Lead extends DocumentCT {
     @Expose()
     public verifiedOn?: Date;
 
-    @prop({ type: () => Sources })
+    @prop({ ref: () => Sources })
     @Expose()
-    public source?: Sources;
+    public source?: Ref<Sources>;
 
     @prop()
     @Expose()

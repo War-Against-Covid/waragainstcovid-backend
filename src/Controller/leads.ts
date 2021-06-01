@@ -149,12 +149,12 @@ function processText(text: String): Lead {
     return lead;
 }
 
-async function getSourceFromId(id: string) {
-    if (!id) throw new RequestError(400, 'sourceId is missing');
-    const source = await SourcesModel.findById(id).lean();
-    if (!source) throw new RequestError(404, 'source not found or wrong sourceId');
-    return { sourceName: source.sourceName, sourceURL: source.sourceURL };
-}
+// async function getSourceFromId(id: string) {
+//     if (!id) throw new RequestError(400, 'sourceId is missing');
+//     const source = await SourcesModel.findById(id).lean();
+//     if (!source) throw new RequestError(404, 'source not found or wrong sourceId');
+//     return { sourceName: source.sourceName, sourceURL: source.sourceURL };
+// }
 
 /**
  *  POST /api/lead/
@@ -175,6 +175,8 @@ export async function createLead(req: Request, res: Response) {
     const contactRegex = /(\b\d{9,12}\b)/i;
     const { text, contacts, sourceId } = req.body;
     if (!text || !contacts || !sourceId) throw new RequestError(400, 'missing parameters');
+    const source = await SourcesModel.findById(sourceId);
+    if (!source) throw new RequestError(400, 'invalid sourceId!');
     // eslint-disable-next-line no-restricted-syntax
     for (const phone of contacts) {
         if (!contactRegex.test(phone)) {
@@ -182,15 +184,15 @@ export async function createLead(req: Request, res: Response) {
         }
     }
     const leadFromText = processText(text);
-    const source = await getSourceFromId(sourceId);
+    // const source = await getSourceFromId(sourceId);
 
     const lead = plainToClass(Lead, {
         // All newly created leads are set to unverified.
         ...leadFromText,
-        source,
+        source: sourceId,
         contact: contacts,
         rawText: text,
-        verificationState: source ? VerificationState.source : VerificationState.notVerified,
+        verificationState: VerificationState.source,
         verifiedOn: undefined,
         lastUpdated: undefined,
         updatedBy: undefined,
