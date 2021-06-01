@@ -7,7 +7,7 @@ import {
 } from '../utils/constants';
 import RequestError from '../utils/RequestError';
 import { validateObject } from '../utils';
-import { getCities, getStates, getCitiesGroupedByState } from './data';
+import { getStates, getCitiesGroupedByState } from './data';
 import { SourcesModel } from '../Model/Sources';
 
 export async function getAllLeads(req: Request, res: Response) {
