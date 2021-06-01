@@ -69,16 +69,6 @@ function processText(text: String): Lead {
     lead.resource = [];
     lead.plasma = [];
 
-    // Fetch cities from text
-    // eslint-disable-next-line no-restricted-syntax
-    for (const city of getCities()) {
-        if (lowerText.includes(city.toLowerCase())) {
-            lead.city = city;
-            break;
-        }
-    }
-    if (!lead.city) throw new RequestError(400, 'Cannot parse city');
-
     // Fetch states from text
     // eslint-disable-next-line no-restricted-syntax
     for (const state of getStates()) {
@@ -88,21 +78,20 @@ function processText(text: String): Lead {
         }
     }
 
-    // Add state from city if state not found.
-    if (!lead.state) {
-        const states = getCitiesGroupedByState();
-        // eslint-disable-next-line no-restricted-syntax
-        for (const state of Object.keys(states)) {
-            if (states[state].includes(lead.city)) {
-                lead.state = state;
-                break;
-            }
+    if (!lead.state) throw new RequestError(400, 'Cannot parse state');
+
+    // Fetch cities from text
+    // eslint-disable-next-line no-restricted-syntax
+    for (const city of getCitiesGroupedByState()[lead.state]) {
+        if (lowerText.includes(city.toLowerCase())) {
+            lead.city = city;
+            break;
         }
     }
 
-    // wtf?
-    if (!lead.state) throw new RequestError(500, `Cannot parse state for city: ${lead.city}`);
+    if (!lead.city) throw new RequestError(400, 'Cannot parse city');
 
+    // legacy code -- Probably not needed now
     // Checks if parsed city is of parsed state or not
     const states = getCitiesGroupedByState();
     let foundCity = false;
