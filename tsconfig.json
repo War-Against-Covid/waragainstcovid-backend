@@ -8,6 +8,7 @@
     "lib": [
       "ES2020"
     ],
+    "jsx": "preserve",
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,

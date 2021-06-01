@@ -24,7 +24,7 @@ import swaggerDoc from './openapi.json';
 import leadRoutes from './Routes/leads';
 import dataRoutes from './Routes/data';
 import formRoutes from './Routes/forms';
-import { adminDashOps, setupAdminDashboard } from './utils/adminBro';
+import { adminDashOps, setupAdminDashboard } from './AdminBro/adminBro';
 
 AdminBro.registerAdapter(AdminBroMongoose);
 

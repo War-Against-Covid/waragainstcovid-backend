@@ -8,12 +8,12 @@ import { unflatten } from 'flat';
 import { User, UserModel } from '../Model/User';
 import { Lead, LeadModel } from '../Model/Leads';
 import { getCities, getStates } from '../Controller/data';
-import { validateAdminBro } from '.';
+import { validateAdminBro } from '../utils';
 import {
     BCRYPT_HASH_RATE, Plasma, Resource, VerificationState,
-} from './constants';
+} from '../utils/constants';
 import { SourcesModel } from '../Model/Sources';
-import CustomImgUpload from './ImageRiderProvider';
+import CustomImgUpload from '../utils/ImageRiderProvider';
 import { ContactModel } from '../Model/Contact';
 import { ContributeModel } from '../Model/Contribute';
 import { Need, NeedModel } from '../Model/Need';
@@ -64,8 +64,23 @@ const needResource = {
                 isVisible: {
                     list: true, edit: true, filter: true, show: true,
                 },
+                components: {
+                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                },
+                custom: {
+                    listName: 'resource',
+                },
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Resource).map((value) => ({ value, label: value })),
+            },
+            contact: {
+                components: {
+                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                },
+                custom: {
+                    listName: 'contact',
+                    breakAfter: 1,
+                },
             },
             lastUpdated: {
                 // eslint-disable-next-line object-curly-newline
@@ -223,16 +238,37 @@ const leadResource = {
                 isVisible: {
                     list: true, edit: true, filter: true, show: true,
                 },
+                components: {
+                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                },
+                custom: {
+                    listName: 'resource',
+                },
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Resource).map((value) => ({ value, label: value })),
             },
             plasma: {
+                components: {
+                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                },
+                custom: {
+                    listName: 'plasma',
+                },
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Plasma).map((value) => ({ value, label: value })),
             },
             verificationState: {
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(VerificationState).map((value) => ({ value, label: value })),
+            },
+            contact: {
+                components: {
+                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                },
+                custom: {
+                    listName: 'contact',
+                    breakAfter: 1,
+                },
             },
             verifiedOn: {
                 // eslint-disable-next-line object-curly-newline
@@ -246,9 +282,9 @@ const leadResource = {
                 // eslint-disable-next-line object-curly-newline
                 isVisible: { list: false, filter: true, show: true, edit: false },
             },
-            source: {
+            'source.sourceName': {
                 // eslint-disable-next-line object-curly-newline
-                isVisible: { list: false, filter: true, show: true, edit: false },
+                isVisible: { list: true, filter: true, show: false, edit: false },
             },
             createdOn: {
                 // eslint-disable-next-line object-curly-newline
