@@ -1,5 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-restricted-syntax */
-// eslint-disable-next-line import/no-extraneous-dependencies
+
+// eslint-disable-next-line no-use-before-define
+import React from 'react';
 import { Badge } from '@admin-bro/design-system';
 import { BasePropertyProps } from 'admin-bro';
 import { unflatten } from 'flat';

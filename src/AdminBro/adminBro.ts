@@ -65,17 +65,18 @@ const needResource = {
                     list: true, edit: true, filter: true, show: true,
                 },
                 components: {
-                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                    list: AdminBro.bundle('./Custom/ListLabel'),
                 },
                 custom: {
                     listName: 'resource',
+                    breakAfter: 1,
                 },
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Resource).map((value) => ({ value, label: value })),
             },
             contact: {
                 components: {
-                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                    list: AdminBro.bundle('./Custom/ListLabel'),
                 },
                 custom: {
                     listName: 'contact',
@@ -239,21 +240,27 @@ const leadResource = {
                     list: true, edit: true, filter: true, show: true,
                 },
                 components: {
-                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                    list: AdminBro.bundle('./Custom/ListLabel'),
                 },
                 custom: {
                     listName: 'resource',
+                    breakAfter: 1,
                 },
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Resource).map((value) => ({ value, label: value })),
             },
             plasma: {
-                components: {
-                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                isVisible: {
+                    list: false, edit: true, filter: true, show: true,
                 },
-                custom: {
-                    listName: 'plasma',
-                },
+                // Hiding plasma
+                // components: {
+                //     list: AdminBro.bundle('./Custom/ListLabel'),
+                // },
+                // custom: {
+                //     listName: 'plasma',
+                // },
+
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Plasma).map((value) => ({ value, label: value })),
             },
@@ -263,7 +270,7 @@ const leadResource = {
             },
             contact: {
                 components: {
-                    list: AdminBro.bundle('./Custom/ListLabel.tsx'),
+                    list: AdminBro.bundle('./Custom/ListLabel'),
                 },
                 custom: {
                     listName: 'contact',
