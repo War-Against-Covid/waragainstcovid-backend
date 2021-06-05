@@ -61,14 +61,8 @@ app.use((req, _, next) => {
 // Routes to be called when DB Connection was successful.
 const loadRoutes = () => {
     // AdminBro causes problems when loading urlencoded middleware
-    app.use(express.urlencoded({
-        extended: true,
-    }));
-    const apiLimiter = rateLimit(process.env.NODE_ENV === ENV.PROD ? {
-        store: new RedisStore({ client: redisClient }),
-        windowMs: 2 * 60 * 1000, // 2 minutes
-        max: 10,
-    } : {
+    app.use(express.urlencoded({ extended: true }));
+    const apiLimiter = rateLimit({
         windowMs: 2 * 60 * 1000, // 2 minutes
         max: 100,
     });
@@ -78,18 +72,8 @@ const loadRoutes = () => {
     app.use('/api/data', dataRoutes);
     app.use('/api/forms', apiLimiter, formRoutes);
 
-    app.get('/api/ping', async (req, res) => {
-        req.log('seems to be working');
-        res.json({
-            status: 'success',
-            message: 'Pinged!',
-        });
-    });
-
     // Unsupported Routes
-    app.use(() => {
-        throw new RequestError(404, 'Cannot find this Route!');
-    });
+    app.use(() => { throw new RequestError(404, 'Cannot find this Route!'); });
     // Error Handling for any other error
     app.use(ErrorHandler);
 };
