@@ -2,6 +2,7 @@
 import { STATUS_CODES } from 'http';
 import { NextFunction, Request, Response } from 'express';
 import Logger from 'pino';
+import fs from 'fs';
 import RequestError from './RequestError';
 
 export const logger = Logger();
@@ -13,13 +14,12 @@ export const ErrorHandler = (error: RequestError | any, req: Request, res: Respo
     // include params in /tracking/<id:string>
     if (req.params) body = { ...body, ...req.params };
 
-    // Not needed in warAgainstCovid
-
-    // if (req.file) {
-    //     fs.unlink(req.file.path, (err: any) => {
-    //         logger.error(`Error while unlinking file: ${err}`);
-    //     });
-    // }
+    if (req.file) {
+        logger.info('Removing file', req.file);
+        fs.unlink(req.file.path, (err: any) => {
+            logger.error(`Error while unlinking file: ${err}`);
+        });
+    }
 
     // eslint-disable-next-line no-param-reassign
 

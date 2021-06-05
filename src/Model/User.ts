@@ -7,7 +7,7 @@ import { Length, IsNotEmpty, IsEnum } from 'class-validator';
 import DocumentCT from './Base';
 
 // eslint-disable-next-line no-shadow
-enum UserType {
+export enum UserType {
   // eslint-disable-next-line no-unused-vars
   admin = 'admin',
   // eslint-disable-next-line no-unused-vars
@@ -33,6 +33,14 @@ export class User extends DocumentCT {
   @prop({ default: 'default_profile.png' })
   @Expose()
   public imageUrl!: string;
+
+  @prop()
+  @Expose()
+  public linkedIn: string;
+
+  @prop()
+  @Expose()
+  public email: string;
 
   @prop({ default: 'scout', enum: UserType })
   @Expose()

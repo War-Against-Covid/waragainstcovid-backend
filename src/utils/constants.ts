@@ -50,6 +50,7 @@ export enum Resource {
     helpLine                = 'Helpline', // Missing
     homeICU                 = 'Home ICU',
     hospitalBed             = 'Hospital Bed',
+    isolationBed            = 'Isolation Beds',
     HRCTscan                = 'HRCT Scan',
     ICUbed                  = 'ICU Bed',
     liposomalAmphotericinB  = 'Liposomal Amphotericin B',

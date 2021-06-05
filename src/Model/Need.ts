@@ -36,12 +36,12 @@ export class Need extends DocumentCT {
     @prop({ required: true })
     @Expose()
     @IsNotEmpty()
-    public state?: string;
+    public state: string;
 
     @prop({ required: true })
     @Expose()
     @IsNotEmpty()
-    public city?: string;
+    public city: string;
 
     // @prop({ required: true, enum: VerificationState })
     // @Expose()
@@ -54,7 +54,7 @@ export class Need extends DocumentCT {
     @IsNotEmpty()
     @MinLength(9, { each: true })
     @MaxLength(13, { each: true })
-    public contact: string[];
+    public contact: string;
 
     @prop({ required: true, enum: NeedStatus })
     @Expose()

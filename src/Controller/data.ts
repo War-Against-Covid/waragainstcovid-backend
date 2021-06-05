@@ -3,6 +3,7 @@ import { ResourcesCollapsed } from '../utils/constants';
 import CITIES from '../utils/cities.json';
 import { LeadModel } from '../Model/Leads';
 import { NeedModel, NeedStatus } from '../Model/Need';
+import { UserModel, UserType } from '../Model/User';
 
 export function getStates() {
     let states = [];
@@ -91,5 +92,16 @@ export async function getStats(_req: Request, res: Response) {
             'Lives Touched': needs.length,
         },
         status: 'success',
+    });
+}
+
+export async function getAllScouts(req: Request, res: Response) {
+    const scouts = await UserModel.find({
+        type: UserType.scout,
+    });
+
+    res.json({
+        status: 'success',
+        scouts,
     });
 }

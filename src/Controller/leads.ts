@@ -260,9 +260,18 @@ export async function strictSearch(req: Request, res: Response) {
     // page = 2 => 20, 30
     const finalRes = final.slice(page * pageSize, (page * pageSize) + pageSize);
 
+    const ourRes = finalRes.filter((v: any) => (v.source.sourceName === 'WarAgainstCOVID'));
+    // eslint-disable-next-line max-len
+    const verifiedRes = finalRes.filter((v: any) => (v.verificationState === VerificationState.verified));
+    const othersRes = finalRes.filter((v: any) => (v.verificationState !== VerificationState.verified && v.source.sourceName !== 'WarAgainstCOVID'));
+
     res.json({
         status: 'success',
-        leads: finalRes,
+        leads: [
+            ...ourRes,
+            ...verifiedRes,
+            ...othersRes,
+        ],
         totalPages,
     });
 }

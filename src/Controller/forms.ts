@@ -3,6 +3,8 @@ import { plainToClass } from 'class-transformer';
 import { Contribute, ContributeModel } from '../Model/Contribute';
 import { validateObject } from '../utils';
 import { Contact, ContactModel } from '../Model/Contact';
+import { Need, NeedModel, NeedStatus } from '../Model/Need';
+import RequestError from '../utils/RequestError';
 
 /* handle the contribution form */
 export async function handleContributeForm(req: Request, res: Response) {
@@ -35,9 +37,29 @@ export async function handleContactForm(req: Request, res: Response) {
 
 /* handle the post your need form */
 export async function handlePostYourNeedForm(req: Request, res: Response) {
-    const { state, city, phone } = req.body;
+    let { resources } = req.body;
+
+    if (!resources) throw new RequestError(400, 'Resources not specified!');
+
+    resources = JSON.parse(resources);
+    const needObj = plainToClass(Need, {
+        ...req.body,
+        resource: resources,
+        status: NeedStatus.unresolved,
+        createdOn: new Date(),
+    });
+
+    await validateObject(needObj);
+
+    if (req.file) {
+        const filePath = req.file.path.split('/').splice(1).join('/'); // Skip 'uploads/' in name
+        needObj.prescriptionUrl = filePath;
+    }
+
+    const final = await NeedModel.create(needObj);
+
     res.json({
         status: 'success',
-        message: `${state} ${city} ${phone}`,
+        need: final,
     });
 }

@@ -4,15 +4,13 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import 'express-async-errors';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import expressStatusMonitor from 'express-status-monitor';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import AdminBro from 'admin-bro';
 import swaggerUI from 'swagger-ui-express';
 import AdminBroMongoose from '@admin-bro/mongoose';
 import AdminBroExpress from '@admin-bro/express';
-// import rateLimit from 'express-rate-limit';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import session from 'express-session';
 import redis from 'redis';
@@ -66,27 +64,19 @@ const loadRoutes = () => {
     app.use(express.urlencoded({
         extended: true,
     }));
-    // const apiLimiter = rateLimit({
-    //     // to use redis-store instead of default memory store,
-    //     // install rate-limit-redis and uncomment the below lines
-
-    //     // store: new RedisStore({}),
-    //     windowMs: 2 * 60 * 1000, // 2 minutes
-    //     max: 100,
-    // });
-    if (process.env.NODE_ENV === ENV.DEV) {
-        app.use(expressStatusMonitor());
-    }
-    // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
-    // see https://expressjs.com/en/guide/behind-proxies.html
-    // app.set('trust proxy', 1);
+    const apiLimiter = rateLimit(process.env.NODE_ENV === ENV.PROD ? {
+        store: new RedisStore({ client: redisClient }),
+        windowMs: 2 * 60 * 1000, // 2 minutes
+        max: 10,
+    } : {
+        windowMs: 2 * 60 * 1000, // 2 minutes
+        max: 100,
+    });
 
     app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
-    // added here just for demonstration purpose,
-    // to be moved to /api/needs when it is ready
     app.use('/api/leads', leadRoutes);
     app.use('/api/data', dataRoutes);
-    app.use('/api/forms', formRoutes);
+    app.use('/api/forms', apiLimiter, formRoutes);
 
     app.get('/api/ping', async (req, res) => {
         req.log('seems to be working');

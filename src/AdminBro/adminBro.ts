@@ -10,7 +10,7 @@ import { Lead, LeadModel } from '../Model/Leads';
 import { getCities, getStates } from '../Controller/data';
 import { validateAdminBro } from '../utils';
 import {
-    BCRYPT_HASH_RATE, Plasma, Resource, VerificationState,
+    BCRYPT_HASH_RATE, ENV, Plasma, Resource, VerificationState,
 } from '../utils/constants';
 import { SourcesModel } from '../Model/Sources';
 import CustomImgUpload from '../utils/ImageRiderProvider';
@@ -73,15 +73,6 @@ const needResource = {
                 },
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Resource).map((value) => ({ value, label: value })),
-            },
-            contact: {
-                components: {
-                    list: AdminBro.bundle('./Custom/ListLabel'),
-                },
-                custom: {
-                    listName: 'contact',
-                    breakAfter: 1,
-                },
             },
             lastUpdated: {
                 // eslint-disable-next-line object-curly-newline
@@ -213,7 +204,7 @@ const userResource = {
         },
     },
     features: [uploadFeature({
-        provider: new CustomImgUpload({ bucket: 'uploads' }),
+        provider: new CustomImgUpload({ bucket: 'uploads/user' }),
         validation: {
             mimeTypes: ['image/png', 'image/jpeg'],
             maxSize: 10e+6,
@@ -314,6 +305,7 @@ const leadResource = {
                         verifiedOn: undefined,
                         lastUpdated: undefined,
                         updatedBy: currentAdmin.username,
+                        source: process.env.NODE_ENV === ENV.PROD ? '60bb881baef9fc5f5c0ddcf3' : undefined, // Source is WAC
                         createdOn: new Date(),
                     };
 
