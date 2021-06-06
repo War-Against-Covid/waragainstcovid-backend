@@ -49,12 +49,12 @@ export class Need extends DocumentCT {
     // @IsEnum(VerificationState)
     // public verificationState: VerificationState;
 
-    @prop({ required: true })
+    @prop({ required: true, type: [String] })
     @Expose()
     @IsNotEmpty()
     @MinLength(9, { each: true })
     @MaxLength(13, { each: true })
-    public contact: string;
+    public contact: string[];
 
     @prop({ required: true, enum: NeedStatus })
     @Expose()

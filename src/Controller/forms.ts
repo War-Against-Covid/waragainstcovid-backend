@@ -37,14 +37,17 @@ export async function handleContactForm(req: Request, res: Response) {
 
 /* handle the post your need form */
 export async function handlePostYourNeedForm(req: Request, res: Response) {
-    let { resources } = req.body;
+    let { resources, contact } = req.body;
 
+    if (!contact) throw new RequestError(400, 'Contacts not specified!');
     if (!resources) throw new RequestError(400, 'Resources not specified!');
 
+    contact = JSON.parse(contact);
     resources = JSON.parse(resources);
     const needObj = plainToClass(Need, {
         ...req.body,
         resource: resources,
+        contact,
         status: NeedStatus.unresolved,
         createdOn: new Date(),
     });
