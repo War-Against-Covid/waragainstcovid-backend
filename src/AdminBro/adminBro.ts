@@ -74,6 +74,15 @@ const needResource = {
                 // eslint-disable-next-line max-len
                 availableValues: Object.values(Resource).map((value) => ({ value, label: value })),
             },
+            contact: {
+                components: {
+                    list: AdminBro.bundle('./Custom/ListLabel'),
+                },
+                custom: {
+                    listName: 'contact',
+                    breakAfter: 1,
+                },
+            },
             lastUpdated: {
                 // eslint-disable-next-line object-curly-newline
                 isVisible: { list: false, filter: true, show: true, edit: false },
@@ -92,7 +101,12 @@ const needResource = {
             delete: { isAccessible: ({ currentAdmin }: { currentAdmin: User }) => currentAdmin && currentAdmin.type === 'admin' },
             new: {
                 before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
-                    const needObj = unflatten(request.payload) as {};
+                    const req = unflatten(request.payload) as any;
+                    if (Array.isArray(req?.contact)) {
+                        // replace all non-phone numbers
+                        req.contact = req.contact.map((elem: number|string) => elem.toString().replace(/[^0-9]/g, ''));
+                    }
+                    const needObj = req as any;
                     const need = plainToClass(Need, {
                         ...needObj,
                         updatedBy: currentAdmin.username,
@@ -100,7 +114,7 @@ const needResource = {
                     });
                     await validateAdminBro(need);
                     request.payload = {
-                        ...request.payload,
+                        ...req,
                         ...need,
                     };
                     return request;
@@ -160,7 +174,8 @@ const contributeResource = {
 const userResource = {
     resource: UserModel,
     options: {
-        // editProperties: ['fullName', 'username', 'password', 'type'],
+        // eslint-disable-next-line max-len
+        // editProperties: ['fullName', 'email', 'username', 'password', 'mimeType', 'linkedIn', 'type'],
         properties: {
             imageUrl: {
                 mimeType: {},
@@ -296,12 +311,21 @@ const leadResource = {
                 // eslint-disable-next-line max-len
                 before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
                     if (request.method !== 'post') return request;
-                    const leadObj = unflatten(request.payload) as any;
+
+                    const req = unflatten(request.payload) as any;
+                    if (Array.isArray(req?.contact)) {
+                        // replace all non-phone numbers
+                        req.contact = req.contact.map((elem: number|string) => elem.toString().replace(/[^0-9]/g, ''));
+                    }
+                    if (!req?.plasma) {
+                        req.plasma = [];
+                    }
+                    const leadObj = req as any;
 
                     const defaults: any = {
                         // All newly created leads are set to unverified.
                         // eslint-disable-next-line max-len
-                        verificationState: request.payload.verificationState ? request.payload.verificationState : VerificationState.notVerified,
+                        verificationState: req.verificationState ? req.verificationState : VerificationState.notVerified,
                         verifiedOn: undefined,
                         lastUpdated: undefined,
                         updatedBy: currentAdmin.username,
@@ -315,7 +339,7 @@ const leadResource = {
                     });
                     await validateAdminBro(lead);
                     request.payload = {
-                        ...request.payload,
+                        ...req,
                         ...defaults,
                     };
                     return request;
@@ -324,10 +348,19 @@ const leadResource = {
             edit: {
                 before: async (request: any, { currentAdmin }: { currentAdmin: User }) => {
                     if (request.method !== 'post') return request;
-                    const leadObj = unflatten(request.payload) as {};
+                    const req = unflatten(request.payload) as any;
+                    if (Array.isArray(req?.contact)) {
+                        // replace all non-phone numbers
+                        req.contact = req.contact.map((elem: number|string) => elem.toString().replace(/[^0-9]/g, ''));
+                    }
+                    if (!req?.plasma) {
+                        req.plasma = [];
+                    }
+                    const leadObj = req as any;
+
                     const defaults: any = {
                         // eslint-disable-next-line max-len
-                        verifiedOn: request.payload.verificationState === VerificationState.verified ? new Date() : undefined,
+                        verifiedOn: req.verificationState === VerificationState.verified ? new Date() : undefined,
                         lastUpdated: new Date(),
                         updatedBy: currentAdmin.username,
                     };
@@ -339,7 +372,7 @@ const leadResource = {
 
                     await validateAdminBro(lead);
                     request.payload = {
-                        ...request.payload,
+                        ...req,
                         ...defaults,
                     };
                     return request;

@@ -44,6 +44,10 @@ export async function handlePostYourNeedForm(req: Request, res: Response) {
 
     contact = JSON.parse(contact);
     resources = JSON.parse(resources);
+    if (Array.isArray(contact)) {
+        // replace all non-phone numbers
+        contact = contact.map((elem: number|string) => elem.toString().replace(/[^0-9]/g, ''));
+    }
     const needObj = plainToClass(Need, {
         ...req.body,
         resource: resources,
