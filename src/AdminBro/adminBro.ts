@@ -175,7 +175,7 @@ const userResource = {
     resource: UserModel,
     options: {
         // eslint-disable-next-line max-len
-        // editProperties: ['fullName', 'email', 'username', 'password', 'mimeType', 'linkedIn', 'type'],
+        // editProperties: ['fullName', 'Instagram', 'username', 'password', 'mimeType', 'linkedIn', 'type'],
         properties: {
             imageUrl: {
                 mimeType: {},

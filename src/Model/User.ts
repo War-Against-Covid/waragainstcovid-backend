@@ -40,7 +40,7 @@ export class User extends DocumentCT {
 
   @prop()
   @Expose()
-  public email: string;
+  public Instagram: string;
 
   @prop({ default: 'scout', enum: UserType })
   @Expose()
